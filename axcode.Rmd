@@ -45,7 +45,7 @@ NotPoorFemales_noHSdiploma <- c("B17003_020")
 NotPoorFemales_HSdiploma <- c("B17003_021","B17003_022","B17003_023")
 ```
 -------------------------------------------------
-```{r new dataset, echo = TRUE, results = 'hide'}
+```{r new dataset7, echo = TRUE, results = 'hide'}
 #dataset with the new poverty variables
 state_poverty_estimate <- get_acs(
   geography = "county",
@@ -60,7 +60,7 @@ state_poverty_estimate <- get_acs(
 )
 ```
 -------------------------------------------------
-```{r, rowwise summaries, echo = TRUE, results = 'hide'}
+```{r, rowwise summaries2, echo = TRUE, results = 'hide'}
 #rowwise summary for poverty dataset
 state_poverty_summary <- state_poverty_estimate %>%
   rowwise() %>%
@@ -103,7 +103,7 @@ MI_poverty <- county_poverty_totals %>%
   relocate(TOTAL, .after = count)
 ```
 -------------------------------------------------
-```{r percentages, echo = TRUE, results = 'hide'}
+```{r percentages5, echo = TRUE, results = 'hide'}
 #poverty by sex by educational attainment group percentages per county
 MI_poverty_percentage <- MI_poverty %>%
   mutate(percent = 100 * (count/TOTAL)) %>%
@@ -179,7 +179,7 @@ femaleAbove65noHSdiploma <- c("B15001_077","B15001_078")
 femaleAbove65HSdiploma <- c("B15001_079","B15001_080","B15001_081","B15001_082","B15001_083")
 ```
 -------------------------------------------------
-```{r new dataset, echo = TRUE, results = 'hide'}
+```{r new dataset5, echo = TRUE, results = 'hide'}
 #r dataset with new age variables
 state_age_estimate <- get_acs(
   geography = "county",
@@ -197,7 +197,7 @@ state_age_estimate <- get_acs(
 )
 ```
 -------------------------------------------------
-```{r rowwise summaries, echo = TRUE, results = 'hide'}
+```{r rowwise summaries7, echo = TRUE, results = 'hide'}
 #rowwise summaries for age dataset
 state_age_summary <- state_age_estimate %>%
   rowwise() %>%
@@ -259,7 +259,7 @@ MI_age <- county_totals  %>%
   relocate(TOTAL, .after = count)
 ```
 -------------------------------------------------
-```{r percentages, echo = TRUE, results = 'hide'}
+```{r percentages9, echo = TRUE, results = 'hide'}
 #age by gender by education for all counties 
 MI_age_percent <- MI_age %>%
   mutate(percent = 100 * (count / TOTAL)) %>%
@@ -286,27 +286,27 @@ ggplot(MI_age_percent, aes(x = variables, y = percent, color= percent)) +
 -------------------------------------------------
 ```{r most interesting variables, echo = TRUE, results = 'hide'}
 #box plot
-ggplot(cool_age_vars, aes(x = variables, y = percent)) +
-  geom_boxplot(
+#ggplot(cool_age_vars, aes(x = variables, y = percent)) +
+ # geom_boxplot(
     
     # custom boxes
-    color="blue",
-    fill="blue",
-    alpha=0.5,
+ #   color="blue",
+#    fill="blue",
+#    alpha=0.5,
     
     # Notch?
-    notch=TRUE,
-    notchwidth = 0.8,
+#    notch=TRUE,
+#    notchwidth = 0.8,
     
     # custom outliers
-    outlier.colour="red",
-    outlier.fill="red",
-    outlier.size=3
-  ) +
-  labs(title = "Individuals with a High School Diploma",
-       caption = "Data Source: 2015-2019 ACS\n") +
-  theme(plot.title = element_text(hjust = 0.5, size =12)) +
-  coord_flip()
+#    outlier.colour="red",
+#    outlier.fill="red",
+#    outlier.size=3
+ # ) +
+  #labs(title = "Individuals with a High School Diploma",
+#       caption = "Data Source: 2015-2019 ACS\n") +
+#  theme(plot.title = element_text(hjust = 0.5, size =12)) +
+#  coord_flip()
 ```
 -------------------------------------------------
 ```{r leaflet map 1, echo = TRUE, results = 'hide'}

@@ -4,7 +4,7 @@ description: |
   SEX BY SCHOOL ENROLLMENT BY EDUCATIONAL ATTAINMENT BY EMPLOYMENT STATUS FOR THE POPULATION 16 TO 19 YEARS <br /> Table: B14005 - Variables used: 09-29
 output_dir: "_site"
 site: distill::distill_website
-runtime: shiny
+#runtime: shiny
 search: TRUE
 ---
 

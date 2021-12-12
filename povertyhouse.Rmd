@@ -7,12 +7,12 @@ site: distill::distill_website
 search: TRUE
 ---
 
-```{r, load_variables}
+```{r, load_variables, echo=FALSE}
 #census_api_key("67cbcd7b6d617916475eb5bd88439380a2511582", install = TRUE)
 #readRenviron("~/.Renviron")
 
-all_vars_acs5 <- 
-  load_variables(year = 2019, dataset = "acs5")
+#all_vars_acs5 <- 
+ # load_variables(year = 2019, dataset = "acs5")
 ```
 
 
@@ -34,51 +34,7 @@ library(hrbrthemes)
 ```
 
 
-B17018 below/above poverty level
-```{r}
-#below poverty level last 12 months
-total_below_poverty = "B17018_002"
-total_married_below = "B17018_003"
-married_nohs = "B17018_004"
-married_hs = "B17018_005"
-married_some_col = "B17018_006"
-married_bach_higher = "B17018_007"
-single_tot = "B17018_008"
-single_male_tot = "B17018_009"
-#male
-single_nohs ="B17018_010"
-single_hs = "B17018_011"
-single_some_col = "B17018_012"
-single_bach_higher = "B17018_013"
-#female
-single_female_tot = "B17018_014"
-single_f_nohs = "B17018_015"
-single_f_hs = "B17018_016"
-single_f_some_col = "B17018_017"
-single_f_bach_higher = "B17018_018"
-
-total_above_poverty = "B17018_019"
-total_married_above = "B17018_020"
-mar_above_nohs = "B17018_021"
-mar_above_hs = "B17018_022"
-mar_above_some_col = "B17018_023"
-mar_above_bach = "B17018_024"
-
-single_above_tot = "B17018_025"
-male_tot_above = "B17018_026"
-male_above_nohs = "B17018_027"
-male_above_hs = "B17018_028"
-male_above_somecol = "B17018_029"
-male_above_bach = "B17018_030"
-
-female_above_tot = "B17018_031"
-f_above_nohs = "B17018_032"
-f_above_hs = "B17018_033"
-f_above_somecol = "B17018_034"
-f_above_bach = "B17018_035"
-```
-
-```{r}
+```{r, echo=FALSE}
 below_poverty <- get_acs(
   geography = "county",
   state = "MI",
@@ -145,7 +101,7 @@ somecol <- get_acs(
   summary_var = "B17018_001"
 )
 
-somecol_percents <- college %>%
+somecol_percents <- somecol %>%
   mutate(percent = 100 * (estimate / summary_est)) %>%
   select(NAME, variable, percent)
 
@@ -155,6 +111,7 @@ college <- get_acs(
   variables = c(Below_Married_college = "B17018_007",
                 Below_Single_Male_college = "B17018_013",
                 Below_Single_Female_college = "B17018_018",
+                Below_Married_noHS = "B17018_004",
                 Above_Married_college = "B17018_024",
                 Above_Single_Male_college = "B17018_023",
                 Above_Single_Female_college = "B17018_035"),
@@ -166,47 +123,52 @@ college_percents <- college %>%
   select(NAME, variable, percent)
 
 ```
-```{r}
-library(ggbeeswarm)
-
-college2 <- get_acs(
-  geography = "tract",
-  state = "MI",
-  variables = c(Below_Married_college = "B17018_007",
-                Below_Single_Male_college = "B17018_013",
-                Below_Single_Female_college = "B17018_018",
-                Above_Married_college = "B17018_024",
-                Above_Single_Male_college = "B17018_023",
-                Above_Single_Female_college = "B17018_035"),
-  summary_var = "B17018_001"
-) %>%
-  group_by(GEOID) %>%
-  filter(estimate == max(estimate, na.rm = TRUE)) %>%
-  ungroup() %>%
-  filter(estimate != 0)
-
-ggplot(college2, aes(x = variable, y = summary_est, color = summary_est)) +
-  geom_quasirandom(alpha = 0.5) + 
-  coord_flip() + 
-  theme_minimal(base_size = 13) + 
-  scale_color_viridis_c(guide = FALSE)  + 
-  labs(x = "Largest group in Census tract", 
-       y = "Median household income", 
-       title = "Household income distribution by largest racial/ethnic group", 
-       subtitle = "Census tracts, New York City", 
-       caption = "Data source: 2015-2019 ACS")
-
-```
-
-```{r}
 
 
 
-# Plot
-ggplot(below_pov_percents, aes(x = `percent`, y = `variable` , fill = ..x..)) +
+
+```{r ,echo=FALSE}
+#plot no hs
+ggplot(noHS_percents, aes(x = `percent`, y = `variable` , fill = ..x..)) +
+  geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
+  scale_fill_viridis(name = "Inferno", option = "B") +
+  labs(title = 'Percent of Population Below High School') +
+  theme_ipsum() +
+    theme(
+      legend.position="none",
+      panel.spacing = unit(0.1, "lines"),
+      strip.text.x = element_text(size = 8)
+    )
+
+# Plot high school
+ggplot(HS_percents, aes(x = `percent`, y = `variable` , fill = ..x..)) +
+  geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
+  scale_fill_viridis(name = "Temp. [F]", option = "C") +
+  labs(title = 'Percent of Population with High School Diploma') +
+  theme_ipsum() +
+    theme(
+      legend.position="none",
+      panel.spacing = unit(0.1, "lines"),
+      strip.text.x = element_text(size = 8)
+    )
+
+# Plot some college
+ggplot(somecol_percents, aes(x = `percent`, y = `variable` , fill = ..x..)) +
+  geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
+  scale_fill_viridis(name = "Inferno", option = "A") +
+  labs(title = 'Percent of Population with Some College') +
+  theme_ipsum() +
+    theme(
+      legend.position="none",
+      panel.spacing = unit(0.1, "lines"),
+      strip.text.x = element_text(size = 8)
+    )
+
+# Plot college
+ggplot(college_percents, aes(x = `percent`, y = `variable` , fill = ..x..)) +
   geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
   scale_fill_viridis(name = "Inferno", option = "D") +
-  labs(title = 'Percent of Population Below Poverty Level') +
+  labs(title = 'Percent of Population with Bachelor or Higher') +
   theme_ipsum() +
     theme(
       legend.position="none",
@@ -214,3 +176,69 @@ ggplot(below_pov_percents, aes(x = `percent`, y = `variable` , fill = ..x..)) +
       strip.text.x = element_text(size = 8)
     )
 ```
+```{r, echo=FALSE}
+library(ggbeeswarm)
+
+married <- get_acs(
+  geography = "tract",
+  state = "MI",
+  variables = c(Below_Married_college = "B17018_007",
+                Below_Married_somecol = "B17018_006",
+                Below_Married_HS = "B17018_005",
+                Above_Married_college = "B17018_024",
+                Above_Married_somecol = "B17018_023",
+                Above_Married_HS = "B17018_022",
+                Above_Married_noHS = "B17018_021"),
+  summary_var = "B17018_001"
+) %>%
+  #group_by(GEOID) %>%
+  #filter(estimate == max(estimate, na.rm = TRUE)) %>%
+  #ungroup() %>%
+  filter(estimate != 0)
+
+ggplot(married, aes(x = variable, y = estimate, color = estimate)) +
+  geom_quasirandom(alpha = 0.5) + 
+  coord_flip() + 
+  theme_minimal(base_size = 13) + 
+  scale_color_viridis_c(guide = "none")  + 
+  labs(x = "Variable", 
+       y = "Population Estimate", 
+       title = "Estimates on Population that are Married", 
+       subtitle = "Census tracts, Michigan", 
+       caption = "Data source: 2015-2019 ACS")
+
+```
+
+```{r, echo=FALSE}
+#females in michigan
+MI_female <- get_acs(geography = "county", 
+                      variables = c(Employed_NoHS ="B14005_027",
+                                    Employed_HS = "B14005_023",
+                                    Unemployed_NoHS = "B14005_028",
+                                    Unemployed_HS ="B14005_024",
+                                    Notinlaborforce_NoHS = "B14005_029",
+                                    Notinlaborforce_HS ="B14005_025"),
+                      state = "MI", geometry = TRUE,
+                      summary_var = "B14005_003") 
+
+MI_female2 <- MI_female %>% 
+  mutate(Percent = 100 * estimate / summary_est)
+married2 <- get_acs(
+  geography = "county",
+  state = "MI",
+  variables = c(Below_Married_college = "B17018_007",
+                Below_Married_somecol = "B17018_006",
+                Below_Married_HS = "B17018_005",
+                Above_Married_college = "B17018_024",
+                Above_Married_somecol = "B17018_023",
+                Above_Married_HS = "B17018_022",
+                Above_Married_noHS = "B17018_021"
+MI_female2 %>% 
+  ggplot(aes(fill = Percent)) +
+    geom_sf(color = NA) +
+    facet_wrap(~variable, ncol = 3) +
+    scale_fill_viridis(name = "Inferno", option = "D")+
+    labs(title = "Percent of Females in Michigan",
+         subtitle = "By High School Graduation and Employment Status")
+```
+
