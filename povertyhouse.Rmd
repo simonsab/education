@@ -15,6 +15,24 @@ search: TRUE
  # load_variables(year = 2019, dataset = "acs5")
 ```
 
+This page analyzes Michigan residents looking specifically at their household type (married or single) and whether they are at or below the poverty line. The educational attainment is based off the head of household's highest completed level of education.<br /> 
+ <br /> 
+
+Below you will find visualizations of the following variables:<br /> <br /> 
+**Above & Below Poverty Line**<br /> 
+-Married households with no high school <br /> 
+-Single male households with no high school <br /> 
+-Single female households with no high school <br /> 
+-Married households with high school <br /> 
+-Single male households with high school <br /> 
+-Single female households with high school <br /> 
+-Married households with some college <br /> 
+-Single male households with some college <br /> 
+-Single female households with some college <br /> 
+-Married households with Bachelor degree or higher<br /> 
+-Single male households with Bachelor degree or higher <br /> 
+-Single female households with Bachelor degree or higher <br />  <br /> 
+
 
 ```{r, Libraries, echo=FALSE}
 library(tidyverse)
@@ -124,8 +142,9 @@ college_percents <- college %>%
 
 ```
 
-
-
+We first used ridgelines maps to look at each educational attainment level. These visualizations show us the percentage distribution for each variable across all counties in Michigan. <br /> 
+An interesting observation from these charts is that Married household types, despite educational level are typically the highest population above the poverty line. This could be simply because there are likely two incomes supporting those households, but there may be additional factors we are not aware of.<br /> <br /> 
+Single men with a Bachelor degree or higher also represented a large percentage of those above the poverty line.<br /> 
 
 ```{r ,echo=FALSE}
 #plot no hs
@@ -176,13 +195,17 @@ ggplot(college_percents, aes(x = `percent`, y = `variable` , fill = ..x..)) +
       strip.text.x = element_text(size = 8)
     )
 ```
+
+Looking closer at the married populations, those with college, some college or high school diplomas have a higher number of residents above the poverty line. Whereas the distribution for our other variables is relatively the same. This beeswarm chart is based on MI census tracts which contant populations between 1,000-8,000.
+
 ```{r, echo=FALSE}
 library(ggbeeswarm)
 
 married <- get_acs(
   geography = "tract",
   state = "MI",
-  variables = c(Below_Married_college = "B17018_007",
+  variables = c(Below_Married_noHS = "B17018_004",
+                Below_Married_college = "B17018_007",
                 Below_Married_somecol = "B17018_006",
                 Below_Married_HS = "B17018_005",
                 Above_Married_college = "B17018_024",
@@ -208,37 +231,30 @@ ggplot(married, aes(x = variable, y = estimate, color = estimate)) +
        caption = "Data source: 2015-2019 ACS")
 
 ```
+Digging deeper into just the married population above the poverty line, we can see there is little difference in the distribution across the state between those with high school and those with some college. Married households without a high school diploma make up a very small percentage of those above the poverty line. Those with higher education have the highest concentrations in the lower peninsula (around Grand Rapids and Detroit) 
 
 ```{r, echo=FALSE}
-#females in michigan
-MI_female <- get_acs(geography = "county", 
-                      variables = c(Employed_NoHS ="B14005_027",
-                                    Employed_HS = "B14005_023",
-                                    Unemployed_NoHS = "B14005_028",
-                                    Unemployed_HS ="B14005_024",
-                                    Notinlaborforce_NoHS = "B14005_029",
-                                    Notinlaborforce_HS ="B14005_025"),
-                      state = "MI", geometry = TRUE,
-                      summary_var = "B14005_003") 
-
-MI_female2 <- MI_female %>% 
-  mutate(Percent = 100 * estimate / summary_est)
 married2 <- get_acs(
-  geography = "county",
-  state = "MI",
-  variables = c(Below_Married_college = "B17018_007",
-                Below_Married_somecol = "B17018_006",
-                Below_Married_HS = "B17018_005",
+  geography = "tract",
+  variables = c(
                 Above_Married_college = "B17018_024",
                 Above_Married_somecol = "B17018_023",
                 Above_Married_HS = "B17018_022",
-                Above_Married_noHS = "B17018_021"
-MI_female2 %>% 
-  ggplot(aes(fill = Percent)) +
+                Above_Married_noHS = "B17018_021"),
+  state = "MI", geometry = TRUE,
+  summary_var = "B17018_001"
+)
+marriedpercent <- married2 %>% 
+  mutate(percent = 100 * estimate / summary_est)%>%
+  select(NAME, variable, percent)
+
+
+marriedpercent %>% 
+  ggplot(aes(fill = `percent`)) +
     geom_sf(color = NA) +
-    facet_wrap(~variable, ncol = 3) +
+    facet_wrap(~variable, ncol = 2) +
     scale_fill_viridis(name = "Inferno", option = "D")+
-    labs(title = "Percent of Females in Michigan",
-         subtitle = "By High School Graduation and Employment Status")
+    labs(title = "Percent Population Married in MI",
+         subtitle = "By household type (Above Poverty Level)")
 ```
 

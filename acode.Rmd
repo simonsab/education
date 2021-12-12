@@ -7,14 +7,6 @@ site: distill::distill_website
 search: TRUE
 ---
 
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE,
-                      results = "hide",
-                      fig.show="hide",
-                      message = FALSE)
-```
-
 ```{r, libraries, echo = TRUE, results = 'hide'}
 #loading libraries
 library(tidyverse)
@@ -445,4 +437,202 @@ server <- function(input, output) {
 
 shinyApp(ui = ui, server = server)
 ```
+----------------------------------------
+```{r, pov1, echo = TRUE, results = 'hide'}
+below_poverty <- get_acs(
+  geography = "county",
+  state = "MI",
+  variables = c(Married_noHS = "B17018_004",
+                Single_Male_noHS = "B17018_010",
+                Single_Female_noHS = "B17018_015",
+                Married_HS = "B17018_005",
+                Single_Male_HS = "B17018_011",
+                Single_Female_HS = "B17018_016",
+                Married_Some_College = "B17018_006",
+                Single_MSome_College = "B17018_012",
+                Single_FSome_College = "B17018_017",
+                Married_College = "B17018_007",
+                Single_Male_College = "B17018_013",
+                Single_Female_College = "B17018_018"),
+  summary_var = "B17018_002"
+) 
 
+below_pov_percents <- below_poverty %>%
+  mutate(percent = 100 * (estimate / summary_est)) %>%
+  select(NAME, variable, percent)
+
+no_HS <- get_acs(
+  geography = "county",
+  state = "MI",
+  variables = c(Below_Married_noHS = "B17018_004",
+                Below_Single_Male_noHS = "B17018_010",
+                Below_Single_Female_noHS = "B17018_015",
+                Above_Married_noHS = "B17018_021",
+                Above_Single_Male_noHS = "B17018_027",
+                Above_Single_Female_noHS = "B17018_032"),
+  summary_var = "B17018_001"
+) 
+noHS_percents <- no_HS %>%
+  mutate(percent = 100 * (estimate / summary_est)) %>%
+  select(NAME, variable, percent)
+
+HS <- get_acs(
+  geography = "county",
+  state = "MI",
+  variables = c(Below_Married_HS = "B17018_005",
+                Below_Single_Male_HS = "B17018_011",
+                Below_Single_Female_HS = "B17018_016",
+                Above_Married_HS = "B17018_022",
+                Above_Single_Male_HS = "B17018_028",
+                Above_Single_Female_HS = "B17018_033"),
+  summary_var = "B17018_001"
+)
+
+HS_percents <- HS %>%
+  mutate(percent = 100 * (estimate / summary_est)) %>%
+  select(NAME, variable, percent)
+
+
+somecol <- get_acs(
+  geography = "county",
+  state = "MI",
+  variables = c(Below_Married_somecol = "B17018_006",
+                Below_Single_Male_somecol = "B17018_012",
+                Below_Single_Female_somecol = "B17018_017",
+                Above_Married_somecol = "B17018_023",
+                Above_Single_Male_somecol = "B17018_029",
+                Above_Single_Female_somecol = "B17018_034"),
+  summary_var = "B17018_001"
+)
+
+somecol_percents <- somecol %>%
+  mutate(percent = 100 * (estimate / summary_est)) %>%
+  select(NAME, variable, percent)
+
+college <- get_acs(
+  geography = "county",
+  state = "MI",
+  variables = c(Below_Married_college = "B17018_007",
+                Below_Single_Male_college = "B17018_013",
+                Below_Single_Female_college = "B17018_018",
+                Below_Married_noHS = "B17018_004",
+                Above_Married_college = "B17018_024",
+                Above_Single_Male_college = "B17018_023",
+                Above_Single_Female_college = "B17018_035"),
+  summary_var = "B17018_001"
+)
+
+college_percents <- college %>%
+  mutate(percent = 100 * (estimate / summary_est)) %>%
+  select(NAME, variable, percent)
+
+```
+-------------------------------------
+```{r pov2, echo = TRUE, results = 'hide'}
+#plot no hs
+ggplot(noHS_percents, aes(x = `percent`, y = `variable` , fill = ..x..)) +
+  geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
+  scale_fill_viridis(name = "Inferno", option = "B") +
+  labs(title = 'Percent of Population Below High School') +
+  theme_ipsum() +
+    theme(
+      legend.position="none",
+      panel.spacing = unit(0.1, "lines"),
+      strip.text.x = element_text(size = 8)
+    )
+
+# Plot high school
+ggplot(HS_percents, aes(x = `percent`, y = `variable` , fill = ..x..)) +
+  geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
+  scale_fill_viridis(name = "Temp. [F]", option = "C") +
+  labs(title = 'Percent of Population with High School Diploma') +
+  theme_ipsum() +
+    theme(
+      legend.position="none",
+      panel.spacing = unit(0.1, "lines"),
+      strip.text.x = element_text(size = 8)
+    )
+
+# Plot some college
+ggplot(somecol_percents, aes(x = `percent`, y = `variable` , fill = ..x..)) +
+  geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
+  scale_fill_viridis(name = "Inferno", option = "A") +
+  labs(title = 'Percent of Population with Some College') +
+  theme_ipsum() +
+    theme(
+      legend.position="none",
+      panel.spacing = unit(0.1, "lines"),
+      strip.text.x = element_text(size = 8)
+    )
+
+# Plot college
+ggplot(college_percents, aes(x = `percent`, y = `variable` , fill = ..x..)) +
+  geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
+  scale_fill_viridis(name = "Inferno", option = "D") +
+  labs(title = 'Percent of Population with Bachelor or Higher') +
+  theme_ipsum() +
+    theme(
+      legend.position="none",
+      panel.spacing = unit(0.1, "lines"),
+      strip.text.x = element_text(size = 8)
+    )
+```
+----------------------------------
+
+```{r, pov3, echo = TRUE, results = 'hide'}
+library(ggbeeswarm)
+
+married <- get_acs(
+  geography = "tract",
+  state = "MI",
+  variables = c(Below_Married_college = "B17018_007",
+                Below_Married_somecol = "B17018_006",
+                Below_Married_HS = "B17018_005",
+                Above_Married_college = "B17018_024",
+                Above_Married_somecol = "B17018_023",
+                Above_Married_HS = "B17018_022",
+                Above_Married_noHS = "B17018_021"),
+  summary_var = "B17018_001"
+) %>%
+  #group_by(GEOID) %>%
+  #filter(estimate == max(estimate, na.rm = TRUE)) %>%
+  #ungroup() %>%
+  filter(estimate != 0)
+
+ggplot(married, aes(x = variable, y = estimate, color = estimate)) +
+  geom_quasirandom(alpha = 0.5) + 
+  coord_flip() + 
+  theme_minimal(base_size = 13) + 
+  scale_color_viridis_c(guide = "none")  + 
+  labs(x = "Variable", 
+       y = "Population Estimate", 
+       title = "Estimates on Population that are Married", 
+       subtitle = "Census tracts, Michigan", 
+       caption = "Data source: 2015-2019 ACS")
+
+```
+-------------------------------------
+```{r, pov5, echo = TRUE, results = 'hide'}
+married2 <- get_acs(
+  geography = "tract",
+  variables = c(
+                Above_Married_college = "B17018_024",
+                Above_Married_somecol = "B17018_023",
+                Above_Married_HS = "B17018_022",
+                Above_Married_noHS = "B17018_021"),
+  state = "MI", geometry = TRUE,
+  summary_var = "B17018_001"
+)
+marriedpercent <- married2 %>% 
+  mutate(percent = 100 * estimate / summary_est)%>%
+  select(NAME, variable, percent)
+
+
+marriedpercent %>% 
+  ggplot(aes(fill = `percent`)) +
+    geom_sf(color = NA) +
+    facet_wrap(~variable, ncol = 2) +
+    scale_fill_viridis(name = "Inferno", option = "D")+
+    labs(title = "Percent Population Married in MI",
+         subtitle = "By household type (Above Poverty Level)")
+```
