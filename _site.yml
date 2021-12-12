@@ -1,8 +1,7 @@
 name: "education"
 title: "STA 418/518 Final Project by Abby Simons-Scalise, Meghan Nash & Alex Gichuki"
 description: |
-  |
- Using Census Data to Analyze Educational Attainment
+  Using Census Data to Analyze Educational Attainment
 output_dir: "_site"
 navbar:
   right:
