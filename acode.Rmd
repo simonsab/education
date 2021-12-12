@@ -572,7 +572,7 @@ ggplot(somecol_percents, aes(x = `percent`, y = `variable` , fill = ..x..)) +
 ggplot(college_percents, aes(x = `percent`, y = `variable` , fill = ..x..)) +
   geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
   scale_fill_viridis(name = "Inferno", option = "D") +
-  labs(title = 'Percent of Population with Bachelor or Higher') +22!!!!!!!!!!!!!!!!!!
+  labs(title = 'Percent of Population with Bachelor or Higher') +
     theme(
       legend.position="none",
       panel.spacing = unit(0.1, "lines"),
