@@ -55,7 +55,7 @@ NotPoorFemales_HSdiploma <- c("B17003_021","B17003_022","B17003_023")
 ```
 
 
-```{r new dataset, message=FALSE, echo=FALSE}
+```{r  dataset3, message=FALSE, echo=FALSE}
 #dataset with the new poverty variables
 state_poverty_estimate <- get_acs(
   geography = "county",
@@ -154,7 +154,7 @@ The distribution of either of the genders per poverty and educational attainment
 ggplot(MI_poverty_percentage, aes(x = variables, y = percent, color= percent)) +
   geom_quasirandom(alpha = 0.5) +
   coord_flip() +
-  scale_color_viridis_c(guide = "none") +
+  scale_fill_viridis() +
   labs(title = "Michigan Counties Poverty Status by Sex by Educational Attainment",
        caption = "Data Source: 2015-2019 ACS\n") +
   theme(plot.title = element_text(hjust = -1, size =12))

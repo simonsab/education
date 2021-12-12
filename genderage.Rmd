@@ -91,7 +91,7 @@ femaleAbove65HSdiploma <- c("B15001_079","B15001_080","B15001_081","B15001_082",
 
 
 
-```{r new dataset, message=FALSE,echo=FALSE}
+```{r new dataset1, message=FALSE,echo=FALSE}
 #r dataset with new age variables
 state_age_estimate <- get_acs(
   geography = "county",
