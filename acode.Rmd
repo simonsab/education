@@ -112,7 +112,7 @@ girafe(ggobj = gg) %>%
                  opts_zoom(max = 10))
 ```
 -------------------------------------------------
-```{r, some college,echo = TRUE, results = 'hide'}
+```{r, prison4 ,echo = TRUE, results = 'hide'}
 #same code as above, just changing variable used
 mi_prison4 <- get_acs(
   geography = "state",
@@ -282,7 +282,7 @@ MI_male2 %>%
 
 ```
 -------------------------------------------------
-```{r, labor_force_plots_females,echo = TRUE, results = 'hide'}
+```{r, labor, echo = TRUE, results = 'hide'}
 
 #females in michigan, heat maps
 MI_female <- get_acs(geography = "county", 
@@ -445,7 +445,8 @@ server <- function(input, output) {
 shinyApp(ui = ui, server = server)
 ```
 ----------------------------------------
-```{r, pov1, echo = TRUE, results = 'hide'}
+```{r, poverty, echo = TRUE, results = 'hide'}
+
 #call for all variables of those below the poverty line
 below_poverty <- get_acs(
   geography = "county",
@@ -541,6 +542,7 @@ college_percents <- college %>%
 ```
 -------------------------------------
 ```{r pov2, echo = TRUE, results = 'hide'}
+
 #ridgeline plot no hs
 ggplot(noHS_percents, aes(x = `percent`, y = `variable` , fill = ..x..)) +
   geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
@@ -588,6 +590,7 @@ ggplot(college_percents, aes(x = `percent`, y = `variable` , fill = ..x..)) +
 ----------------------------------
 
 ```{r, pov3, echo = TRUE, results = 'hide'}
+
 #load library for this next chart
 library(ggbeeswarm)
 
@@ -621,6 +624,7 @@ ggplot(married, aes(x = variable, y = estimate, color = estimate)) +
 ```
 -------------------------------------
 ```{r, pov5, echo = TRUE, results = 'hide'}
+
 #calling all married variables for those ABOVE poverty line
 married2 <- get_acs(
   geography = "tract",
