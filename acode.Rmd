@@ -8,7 +8,7 @@ search: TRUE
 ---
 
 ```{r, libraries, echo = TRUE, results = 'hide'}
-#loading libraries
+#loading libraries to use throughout the project
 library(tidyverse)
 library(tidycensus)
 library(ggridges)
@@ -35,7 +35,7 @@ all_vars_acs5 <-
 ```
 -------------------------------------------------
 ```{r, group_quarters3, echo = TRUE, results = 'hide'}
-#defining variables related direction to adult correctional facilities
+#defining variables related to education in adult correctional facilities populations
 adult_prison_total = "B26106_016"
 No_HS = "B26106_017"
 HS_Only = "B26106_018"
@@ -172,7 +172,7 @@ girafe(ggobj = gg) %>%
 ```
 -------------------------------------------------
 ```{r prison_pop_MI, echo = TRUE, results = 'hide'}
-#calling to API to obtain only HS degrees by state & total for each state
+#calling to API to obtain michigan prison populations by education level
 mi_prison <- get_acs(
   geography = "state",
   state = "MI",
@@ -303,7 +303,7 @@ MI_female2 %>%
 ```
 -------------------------------------------------
 ```{r, leaflet_MI,echo = TRUE, results = 'hide'}
-#interactive leaflet map
+#interactive leaflet map of females not in labor force with HS diploma
 mi1 <- get_acs(geography = "county", 
                variables = c(Notinlaborforce_HS ="B14005_025"), 
                state = "MI", 
@@ -341,6 +341,7 @@ leaflet() %>%
 ```{r variables,echo = TRUE, results = 'hide'}
 #shiny app with dropdown to select different variables
 #displays heatmap
+#did not use in final project - need to embed into website
 
 library(tidycensus)
 library(shiny)
@@ -439,6 +440,7 @@ shinyApp(ui = ui, server = server)
 ```
 ----------------------------------------
 ```{r, pov1, echo = TRUE, results = 'hide'}
+#call for all variables of those below the poverty line
 below_poverty <- get_acs(
   geography = "county",
   state = "MI",
@@ -456,11 +458,12 @@ below_poverty <- get_acs(
                 Single_Female_College = "B17018_018"),
   summary_var = "B17018_002"
 ) 
-
+#mutating for percents
 below_pov_percents <- below_poverty %>%
   mutate(percent = 100 * (estimate / summary_est)) %>%
   select(NAME, variable, percent)
 
+#calling all variables with no high school
 no_HS <- get_acs(
   geography = "county",
   state = "MI",
@@ -472,10 +475,12 @@ no_HS <- get_acs(
                 Above_Single_Female_noHS = "B17018_032"),
   summary_var = "B17018_001"
 ) 
+#mutate to percent
 noHS_percents <- no_HS %>%
   mutate(percent = 100 * (estimate / summary_est)) %>%
   select(NAME, variable, percent)
 
+#calling all variables with high school
 HS <- get_acs(
   geography = "county",
   state = "MI",
@@ -487,12 +492,12 @@ HS <- get_acs(
                 Above_Single_Female_HS = "B17018_033"),
   summary_var = "B17018_001"
 )
-
+#mutate to percent
 HS_percents <- HS %>%
   mutate(percent = 100 * (estimate / summary_est)) %>%
   select(NAME, variable, percent)
 
-
+#calling all variables with some college
 somecol <- get_acs(
   geography = "county",
   state = "MI",
@@ -504,11 +509,12 @@ somecol <- get_acs(
                 Above_Single_Female_somecol = "B17018_034"),
   summary_var = "B17018_001"
 )
-
+#mutate for percents
 somecol_percents <- somecol %>%
   mutate(percent = 100 * (estimate / summary_est)) %>%
   select(NAME, variable, percent)
 
+#calling all variables with bachelor degree or higher
 college <- get_acs(
   geography = "county",
   state = "MI",
@@ -521,7 +527,7 @@ college <- get_acs(
                 Above_Single_Female_college = "B17018_035"),
   summary_var = "B17018_001"
 )
-
+#mutate for percent
 college_percents <- college %>%
   mutate(percent = 100 * (estimate / summary_est)) %>%
   select(NAME, variable, percent)
@@ -529,7 +535,7 @@ college_percents <- college %>%
 ```
 -------------------------------------
 ```{r pov2, echo = TRUE, results = 'hide'}
-#plot no hs
+#ridgeline plot no hs
 ggplot(noHS_percents, aes(x = `percent`, y = `variable` , fill = ..x..)) +
   geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
   scale_fill_viridis(name = "Inferno", option = "B") +
@@ -540,7 +546,7 @@ ggplot(noHS_percents, aes(x = `percent`, y = `variable` , fill = ..x..)) +
       strip.text.x = element_text(size = 8)
     )
 
-# Plot high school
+# ridgeline high school
 ggplot(HS_percents, aes(x = `percent`, y = `variable` , fill = ..x..)) +
   geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
   scale_fill_viridis(name = "Temp. [F]", option = "C") +
@@ -551,7 +557,7 @@ ggplot(HS_percents, aes(x = `percent`, y = `variable` , fill = ..x..)) +
       strip.text.x = element_text(size = 8)
     )
 
-# Plot some college
+# ridgeline some college
 ggplot(somecol_percents, aes(x = `percent`, y = `variable` , fill = ..x..)) +
   geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
   scale_fill_viridis(name = "Inferno", option = "A") +
@@ -562,11 +568,11 @@ ggplot(somecol_percents, aes(x = `percent`, y = `variable` , fill = ..x..)) +
       strip.text.x = element_text(size = 8)
     )
 
-# Plot college
+#ridgeline college
 ggplot(college_percents, aes(x = `percent`, y = `variable` , fill = ..x..)) +
   geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
   scale_fill_viridis(name = "Inferno", option = "D") +
-  labs(title = 'Percent of Population with Bachelor or Higher') +
+  labs(title = 'Percent of Population with Bachelor or Higher') +22!!!!!!!!!!!!!!!!!!
     theme(
       legend.position="none",
       panel.spacing = unit(0.1, "lines"),
@@ -576,8 +582,10 @@ ggplot(college_percents, aes(x = `percent`, y = `variable` , fill = ..x..)) +
 ----------------------------------
 
 ```{r, pov3, echo = TRUE, results = 'hide'}
+#load library for this next chart
 library(ggbeeswarm)
 
+#looking only at variables where household is married
 married <- get_acs(
   geography = "tract",
   state = "MI",
@@ -590,11 +598,9 @@ married <- get_acs(
                 Above_Married_noHS = "B17018_021"),
   summary_var = "B17018_001"
 ) %>%
-  #group_by(GEOID) %>%
-  #filter(estimate == max(estimate, na.rm = TRUE)) %>%
-  #ungroup() %>%
+  #filter to remove 0 estimates
   filter(estimate != 0)
-
+#bee swarm plot for married variables by census tract
 ggplot(married, aes(x = variable, y = estimate, color = estimate)) +
   geom_quasirandom(alpha = 0.5) + 
   coord_flip() + 
@@ -609,6 +615,7 @@ ggplot(married, aes(x = variable, y = estimate, color = estimate)) +
 ```
 -------------------------------------
 ```{r, pov5, echo = TRUE, results = 'hide'}
+#calling all married variables for those ABOVE poverty line
 married2 <- get_acs(
   geography = "tract",
   variables = c(
@@ -619,11 +626,12 @@ married2 <- get_acs(
   state = "MI", geometry = TRUE,
   summary_var = "B17018_001"
 )
+#mutate to percents
 marriedpercent <- married2 %>% 
   mutate(percent = 100 * estimate / summary_est)%>%
   select(NAME, variable, percent)
 
-
+#heatmap by tract of married above poverty variables
 marriedpercent %>% 
   ggplot(aes(fill = `percent`)) +
     geom_sf(color = NA) +
