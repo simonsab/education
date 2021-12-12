@@ -1,14 +1,10 @@
 ---
-title: "Alex Project"
-author: "Alex Gichuki"
-date: "11/22/2021"
-output: html_document
+title: "Poverty Status by Educational Attainment"
+description: |
+  POVERTY STATUS IN THE PAST 12 MONTHS OF INDIVIDUALS BY SEX BY EDUCATIONAL ATTAINMENT <br /> Table: B17003 - Variables used: 4-23.
+output_dir: "_site"
+site: distill::distill_website
 ---
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
 
 ```{r, message=FALSE,echo=FALSE}
 #all_vars_acs5 <- load_variables(year = 2019, dataset = "acs5")
@@ -24,11 +20,6 @@ knitr::opts_chunk$set(echo = TRUE)
 POVERTY STATUS IN THE PAST 12 MONTHS OF INDIVIDUALS BY SEX BY EDUCATIONAL ATTAINMENT
 Table b17003
 
-
-```{r load_variables, message = FALSE}
-#all_vars_acs5 <- 
- # load_variables(year = 2019, dataset = "acs5")
-```
 
 
 ```{r packages, message = FALSE}
@@ -51,9 +42,6 @@ library(shiny)
 
 
 
-POVERTY STATUS IN THE PAST 12 MONTHS OF INDIVIDUALS BY SEX BY EDUCATIONAL ATTAINMENT
-Table b17003
-
 
 ```{r defining poverty variables, message=FALSE, echo=FALSE}
 
@@ -69,7 +57,7 @@ NotPoorFemales_HSdiploma <- c("B17003_021","B17003_022","B17003_023")
 
 ```
 
-<<<<<<< HEAD
+
 ```{r new dataset, message=FALSE, echo=FALSE}
 #dataset with the new poverty variables
 state_poverty_estimate <- get_acs(
@@ -86,17 +74,17 @@ state_poverty_estimate <- get_acs(
 ```
 
 
-From the ACS 2019 5-year survey, we looked at the poverty status of Michigan residents based on whether they obtained high school diplomas or not.
+From the ACS 2019 5-year survey, we looked at the poverty status of Michigan residents based on whether they obtained high school diplomas or not. <br /> <br /> 
 
-Below you will find Geographical visualizations that provide information on the following variables:
--Poor males with no high school diploma
--Poor males with a high school diploma
--Poor females with no high school diploma
--Poor females with a high school diploma
--Not poor males with no high school diploma
--Not poor males with a high school diploma
--Not poor females with no high school diploma
--Not poor females with a high school diploma
+Below you will find Geographical visualizations that provide information on the following variables: <br /> <br />
+-Poor males with no high school diploma <br /> 
+-Poor males with a high school diploma <br />
+-Poor females with no high school diploma <br />
+-Poor females with a high school diploma <br />
+-Not poor males with no high school diploma <br />
+-Not poor males with a high school diploma <br />
+-Not poor females with no high school diploma <br />
+-Not poor females with a high school diploma <br />
 
 
 ```{r, rowwise summaries, message=FALSE, echo=FALSE}
@@ -174,8 +162,8 @@ smallest_PGE_group <- MI_poverty_percentage %>%
 
 
 
-From the plot below, each point represents a county in Michigan. Both males and females with high school diplomas and are not poor have the highest percentages in all counties. Not poor males and females without high school diplomas were the least in all Michigan counties.
-The distribution of either of the genders per poverty and educational attainment category is almost similar. 
+From the plot below, each point represents a county in Michigan. Both males and females with high school diplomas and are not poor have the highest percentages in all counties. Not poor males and females without high school diplomas were the least in all Michigan counties. <br /> <br />
+The distribution of either of the genders per poverty and educational attainment category is almost similar. <br /> <br />
 
 ```{r plot, message=FALSE,echo=FALSE}
 
@@ -190,10 +178,10 @@ ggplot(MI_poverty_percentage, aes(x = variables, y = percent, color= percent)) +
 
 ```
 
-From the plot above each point represents a county in Michigan. Females and males with high school diplomas and are not poor have the highest percentages in all counties. The percentages of poor people with high school diplomas were the least in all counties.
+From the plot above each point represents a county in Michigan. Females and males with high school diplomas and are not poor have the highest percentages in all counties. The percentages of poor people with high school diplomas were the least in all counties. <br /> <br />
 
 
-From the plot below, we can see that the means of each of these variables is almost similar.
+From the plot below, we can see that the means of each of these variables is almost similar. <br /> <br />
 
 ```{r interesting variables, message=FALSE, echo=FALSE}
 

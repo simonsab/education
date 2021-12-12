@@ -1,25 +1,22 @@
 ---
-title: "Sex by Educational Attainment"
+title: "Code contributions to this project from Alex Gichuki"
 description: |
-  SEX BY AGE BY EDUCATIONAL ATTAINMENT FOR THE POPULATION 18 YEARS AND OVER <br /> Table: B15001 - Variables used: 4-42, 45-83.
+  Using Census Data to Analyze Educational Attainment
 output_dir: "_site"
 site: distill::distill_website
+search: TRUE
 ---
 
 
-```{r, message=FALSE,echo=FALSE}
-#all_vars_acs5 <- load_variables(year = 2019, dataset = "acs5")
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      results = "hide",
+                      fig.show="hide",
+                      message = FALSE)
 ```
 
 
-
-```{r Census API, message = FALSE, echo=FALSE}
-#census_api_key("55c2d218ad663e521c268658bf0c9c5c301fef30", install = TRUE, overwrite = TRUE)
-#readRenviron("~/.Renviron") 
-```
-
-
-```{r packages, message = FALSE}
+```{r packages, echo = TRUE, results = 'hide'}
 
 #Loading the required packages
 library(tidycensus)
@@ -36,37 +33,151 @@ options(tigris_use_cache = TRUE)
 library(ggiraph)
 library(shiny)
 ```
+-------------------------------------------------
+```{r defining poverty variables, echo = TRUE, results = 'hide'}
+
+#define poverty variables,
+poorMales_noHSdiploma <- c("B17003_004")
+poorMales_HSdiploma <- c("B17003_005","B17003_006","B17003_007")
+poorFemales_noHSdiploma <- c("B17003_009")
+poorFemales_HSdiploma <- c("B17003_010","B17003_011","B17003_012")
+NotPoorMales_noHSdiploma <- c("B17003_015")
+NotPoorMales_HSdiploma <- c("B17003_016","B17003_017","B17003_018")
+NotPoorFemales_noHSdiploma <- c("B17003_020")
+NotPoorFemales_HSdiploma <- c("B17003_021","B17003_022","B17003_023")
+
+```
+-------------------------------------------------
+```{r new dataset, echo = TRUE, results = 'hide'}
+#dataset with the new poverty variables
+state_poverty_estimate <- get_acs(
+  geography = "county",
+  state =  "MI",
+  variables = c(poorMales_noHSdiploma, poorMales_HSdiploma, poorFemales_noHSdiploma,
+                poorFemales_HSdiploma, NotPoorMales_noHSdiploma, NotPoorMales_HSdiploma,
+                NotPoorFemales_noHSdiploma, NotPoorFemales_HSdiploma),
+  survey = "acs5",
+  year = 2019,
+  output = "wide",
+  geometry = FALSE
+)
+```
+-------------------------------------------------
+```{r, rowwise summaries, echo = TRUE, results = 'hide'}
+
+#rowwise summary for poverty dataset
+state_poverty_summary <- state_poverty_estimate %>%
+  rowwise() %>%
+  mutate(poorMales_noHSdip = B17003_004E,
+         poorMales_HSdip = sum(B17003_005E,B17003_006E,B17003_007E),
+         poorFemales_noHSdip = B17003_009E,
+         poorFemales_HSdip = sum(B17003_010E,B17003_011E,B17003_012E),
+         NotPoorMales_noHSdip = B17003_015E,
+         NotPoorMales_HSdip = sum(B17003_016E,B17003_017E,B17003_018E),
+         NotPoorFemales_noHSdip = B17003_020E,
+         NotPoorFemales_HSdip = sum(B17003_021E,B17003_022E,B17003_023E)
+  ) %>%
+  select(NAME, poorMales_noHSdip, poorMales_HSdip, poorFemales_noHSdip,
+         poorFemales_HSdip, NotPoorMales_noHSdip, NotPoorMales_HSdip,
+         NotPoorFemales_noHSdip, NotPoorFemales_HSdip) %>%
+  arrange(NAME) %>%
+  ungroup()
+```
+-------------------------------------------------
+```{r tidying, echo = TRUE, results = 'hide'}
+
+#separating county name and state name
+state_poverty_summary <- separate(
+  state_poverty_summary,
+  NAME,
+  into = c("county", "state"),
+  sep = ", "
+)
+
+# Deleting column with repeated state name
+MI_poverty_by_edu <- state_poverty_summary %>% 
+  select(-state)
 
 
+#poverty dataset with totals
+county_poverty_totals <- MI_poverty_by_edu %>%
+  rowwise() %>%
+  mutate(TOTAL = sum(c(poorMales_noHSdip, poorMales_HSdip, poorFemales_noHSdip,
+                       poorFemales_HSdip, NotPoorMales_noHSdip, NotPoorMales_HSdip,
+                       NotPoorFemales_noHSdip, NotPoorFemales_HSdip)))
 
 
-From the ACS 2019 5-year survey, we looked specifically at the educational attainment of MI residents 18 years and above. Our variables were already segmented by binary gender. <br /> <br />
+#comparing poverty status by sex by educational attainment
+MI_poverty <- county_poverty_totals %>%
+  pivot_longer(!c(county, TOTAL), names_to = "variables", values_to = "count") %>%
+  relocate(TOTAL, .after = count)
+```
+-------------------------------------------------
+```{r percentages, echo = TRUE, results = 'hide'}
 
-Below you will find Geographical visualizations that provide information on the following variables: <br /> <br />
--male 18 to 24 with a High School diploma <br />
--male 18 to 24 without a diploma <br />
--female 18 to 24 with a High School diploma <br />
--female 18 to 24 without a diploma <br />
--male 25 to 34 with a High School diploma <br />
--male 25 to 34 without a diploma <br />
--female 25 to 34 with a High School diploma <br />
--female 25 to 34 without a diploma <br />
--male 35 to 44 with a High School diploma <br />
--male 35 to 44 without a diploma <br />
--female 35 to 44 with a High School diploma <br />
--female 35 to 44 without a diploma <br />
--male 45 to 64 with a High School diploma <br />
--male 45 to 64 without a diploma <br />
--female 45 to 64 with a High School diploma <br />
--female 45 to 64 without a diploma <br />
--male Above 65 with a High School diploma <br />
--male Above 65 without a diploma <br />
--female Above 65 with a High School diploma <br />
--female Above 65 without a diploma <br />
+#poverty by sex by educational attainment group percentages per county
+MI_poverty_percentage <- MI_poverty %>%
+  mutate(percent = 100 * (count/TOTAL)) %>%
+  select(county, variables, percent)
 
 
+#Group wise poverty by gender by education (PGE)analysis
+largest_PGE_group <- MI_poverty_percentage %>%
+  group_by(county) %>%
+  filter(percent == max(percent))
 
-```{r defining age variables, message =FALSE, echo=FALSE}
+
+smallest_PGE_group <- MI_poverty_percentage %>%
+  group_by(county) %>%
+  filter(percent == min(percent))
+
+```
+-------------------------------------------------
+```{r plot, echo = TRUE, results = 'hide'}
+
+#poverty plot
+ggplot(MI_poverty_percentage, aes(x = variables, y = percent, color= percent)) +
+  geom_quasirandom(alpha = 0.5) +
+  coord_flip() +
+  scale_color_viridis_c(guide = "none") +
+  labs(title = "Michigan Counties Poverty Status by Sex by Educational Attainment",
+       caption = "Data Source: 2015-2019 ACS\n") +
+  theme(plot.title = element_text(hjust = -1, size =12))
+
+```
+-------------------------------------------------
+```{r interesting variables, echo = TRUE, results = 'hide'}
+
+
+cool_poverty_vars <- MI_poverty_percentage %>%
+  group_by(county) %>%
+  filter(row_number() %in% c(2,4,6,8,10,12,14,16,18,20))
+
+
+ggplot(MI_poverty_percentage, aes(x = variables, y = percent)) +
+  geom_boxplot(
+    
+    # custom boxes
+    color="blue",
+    fill="blue",
+    alpha=0.2,
+    
+    # Notch?
+    notch=TRUE,
+    notchwidth = 0.8,
+    
+    # custom outliers
+    outlier.colour="red",
+    outlier.fill="red",
+    outlier.size=3
+  ) +
+labs(title = "BoxPlot",
+       caption = "Data Source: 2015-2019 ACS\n") +
+  theme(plot.title = element_text(hjust = 0.5, size =12)) +
+  coord_flip()
+```
+-------------------------------------------------
+```{r defining age variables, echo = TRUE, results = 'hide'}
 
 #defining age variables by aggregating them by age, gender, and high school completion
 male18to24noHSdiploma <- c("B15001_004","B15001_005")
@@ -91,10 +202,8 @@ femaleAbove65noHSdiploma <- c("B15001_077","B15001_078")
 femaleAbove65HSdiploma <- c("B15001_079","B15001_080","B15001_081","B15001_082","B15001_083")
 
 ```
-
-
-
-```{r new dataset, message=FALSE,echo=FALSE}
+-------------------------------------------------
+```{r new dataset, echo = TRUE, results = 'hide'}
 
 #r dataset with new age variables
 state_age_estimate <- get_acs(
@@ -112,9 +221,8 @@ state_age_estimate <- get_acs(
   geometry = FALSE
 )
 ```
-
-
-```{r rowwise summaries, message=FALSE,echo=FALSE}
+-------------------------------------------------
+```{r rowwise summaries, echo = TRUE, results = 'hide'}
 
 #rowwise summaries for age dataset
 state_age_summary <- state_age_estimate %>%
@@ -149,10 +257,8 @@ state_age_summary <- state_age_estimate %>%
   arrange(NAME) %>%
   ungroup()
 ```
-
-
-
-```{r cleaning the data, message=FALSE,echo=FALSE}
+-------------------------------------------------
+```{r cleaning the data, echo = TRUE, results = 'hide'}
 
 #separating NAME for age data
 state_age_summary <- separate(
@@ -186,10 +292,8 @@ MI_age <- county_totals  %>%
   pivot_longer(!c(county,TOTAL), names_to = "variables", values_to = "count") %>%
   relocate(TOTAL, .after = count)
 ```
-
-
-
-```{r percentages, message=FALSE,echo=FALSE}
+-------------------------------------------------
+```{r percentages, echo = TRUE, results = 'hide'}
 
 #age by gender by education for all counties 
 MI_age_percent <- MI_age %>%
@@ -206,13 +310,8 @@ least_AGE_group <- MI_age_percent %>%
   group_by(county) %>%
   filter(percent == min(percent))
 ```
-
-
-
-
-In the plot below, each point represents a county in Michigan. The plot shows the distributions of the percentage of people represented by each variable per county in Michigan. <br /> <br /> 
-
-```{r Variable plot, message=FALSE,echo=FALSE}
+-------------------------------------------------
+```{r Variable plot, echo = TRUE, results = 'hide'}
 
 ggplot(MI_age_percent, aes(x = variables, y = percent, color= percent)) +
   geom_quasirandom(alpha = 0.5) +
@@ -223,14 +322,8 @@ ggplot(MI_age_percent, aes(x = variables, y = percent, color= percent)) +
   theme(plot.title = element_text(hjust = 1, size =12))
 
 ```
-
-
-We decided to create box plots that would further allow us to investigate the noticeable spread on all variables representing people with high school diplomas as shown below. <br /> <br />
-
-
-
-
-```{r most interesting variables, message=FALSE}
+-------------------------------------------------
+```{r most interesting variables, echo = TRUE, results = 'hide'}
 
 #box plot
 ggplot(cool_age_vars, aes(x = variables, y = percent)) +
@@ -255,16 +348,8 @@ ggplot(cool_age_vars, aes(x = variables, y = percent)) +
   theme(plot.title = element_text(hjust = 0.5, size =12)) +
   coord_flip()
 ```
-
-We noticed that the more females than males between 45 and 64 years had high school diplomas as seen from the means in the plot above although the difference is barely noticeable. <br /> <br />
-Interestingly, there are significantly more females than males above 65 years who have high school diplomas in Michigan. <br /> <br />
-
-To investigate this further, we decided to create interactive maps to show how the values of these four variables are distributed in all Michigan counties. <br /> <br />
-
-
-The map below shows the count of all males ages 45 to 65 without High School Diplomas in each county. <br /> <br />
-
-```{r leaflet map 1, message=FALSE, echo=FALSE}
+-------------------------------------------------
+```{r leaflet map 1, echo = TRUE, results = 'hide'}
 #Male 45 to 64 with no High School Diploma
 data1 <- get_acs(geography = "county",
                  variables = c(male45to64noHSdiploma),
@@ -312,11 +397,8 @@ leaflet() %>%
   hideGroup("Tracts")
 
 ```
-
-
-The map below shows the count of all females ages 45 to 65 without High School Diplomas in each county. <br /> <br />
-
-```{r leaflet map 2, message=FALSE,echo=FALSE}
+-------------------------------------------------
+```{r leaflet map 2, echo = TRUE, results = 'hide'}
 #Female 45 to 64 with no High School Diploma.
 
 data3 <- get_acs(geography = "county",
@@ -359,13 +441,8 @@ leaflet() %>%
   hideGroup("Tracts")
 
 ```
-
-
-
-
-The map below shows the count of all males above 65 with a High School Diplomas in each county. <br /> <br />
-
-```{r leaflet map 3, message=FALSE,echo=FALSE}
+-------------------------------------------------
+```{r leaflet map 3, echo = TRUE, results = 'hide'}
 #Male above 65 with High School Diploma.
 
 data5 <- get_acs(geography = "county",
@@ -414,12 +491,8 @@ leaflet() %>%
 
 
 ```
-
-
-
-The map below shows the count of all females above 65 with a High School Diplomas in each county. <br /> <br />
-
-```{r message=FALSE,echo=FALSE}
+-------------------------------------------------
+```{r message=FALSE,echo = TRUE, results = 'hide'}
 #Female above 65 with High School Diploma.
 
 data7 <- get_acs(geography = "county",
@@ -466,7 +539,3 @@ leaflet() %>%
   hideGroup("Tracts")
 
 ```
-
-In the above maps, we see that the area around Detroit has the largest numbers while the counties in the upper peninsula have the least. <br /> <br />
-
-
