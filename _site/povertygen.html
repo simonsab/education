@@ -89,27 +89,27 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <!--radix_placeholder_meta_tags-->
   <title>STA 418/518 Final Project by Abby Simons-Scalise, Meghan Nash &amp; Alex Gichuki: Poverty Status by Gender</title>
 
-  <meta property="description" itemprop="description" content="Add in variable info here please"/>
+  <meta property="description" itemprop="description" content="POVERTY STATUS IN THE PAST 12 MONTHS OF INDIVIDUALS BY SEX BY EDUCATIONAL ATTAINMENT &lt;br /&gt; Table: B17003 - Variables used: 4-23."/>
 
 
 
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
   <meta property="og:title" content="STA 418/518 Final Project by Abby Simons-Scalise, Meghan Nash &amp; Alex Gichuki: Poverty Status by Gender"/>
   <meta property="og:type" content="article"/>
-  <meta property="og:description" content="Add in variable info here please"/>
+  <meta property="og:description" content="POVERTY STATUS IN THE PAST 12 MONTHS OF INDIVIDUALS BY SEX BY EDUCATIONAL ATTAINMENT &lt;br /&gt; Table: B17003 - Variables used: 4-23."/>
   <meta property="og:locale" content="en_US"/>
   <meta property="og:site_name" content="STA 418/518 Final Project by Abby Simons-Scalise, Meghan Nash &amp; Alex Gichuki"/>
 
   <!--  https://dev.twitter.com/cards/types/summary -->
   <meta property="twitter:card" content="summary"/>
   <meta property="twitter:title" content="STA 418/518 Final Project by Abby Simons-Scalise, Meghan Nash &amp; Alex Gichuki: Poverty Status by Gender"/>
-  <meta property="twitter:description" content="Add in variable info here please"/>
+  <meta property="twitter:description" content="POVERTY STATUS IN THE PAST 12 MONTHS OF INDIVIDUALS BY SEX BY EDUCATIONAL ATTAINMENT &lt;br /&gt; Table: B17003 - Variables used: 4-23."/>
 
   <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","output_dir","site"]}},"value":[{"type":"character","attributes":{},"value":["Poverty Status by Gender"]},{"type":"character","attributes":{},"value":["Add in variable info here please\n"]},{"type":"character","attributes":{},"value":["_site"]},{"type":"character","attributes":{},"value":["distill::distill_website"]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","output_dir","site"]}},"value":[{"type":"character","attributes":{},"value":["Poverty Status by Gender"]},{"type":"character","attributes":{},"value":["POVERTY STATUS IN THE PAST 12 MONTHS OF INDIVIDUALS BY SEX BY EDUCATIONAL ATTAINMENT <br /> Table: B17003 - Variables used: 4-23.\n"]},{"type":"character","attributes":{},"value":["_site"]},{"type":"character","attributes":{},"value":["distill::distill_website"]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   <!--radix_placeholder_navigation_in_header-->
@@ -2057,7 +2057,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Poverty Status by Gender","description":"Add in variable info here please","authors":[]}
+{"title":"Poverty Status by Gender","description":"POVERTY STATUS IN THE PAST 12 MONTHS OF INDIVIDUALS BY SEX BY EDUCATIONAL ATTAINMENT <br /> Table: B17003 - Variables used: 4-23.","authors":[]}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2110,11 +2110,63 @@ Code
 <h1>Poverty Status by Gender</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
-<p><p>Add in variable info here please</p></p>
+<p><p>POVERTY STATUS IN THE PAST 12 MONTHS OF INDIVIDUALS BY SEX BY EDUCATIONAL ATTAINMENT <br /> Table: B17003 - Variables used: 4-23.</p></p>
 </div>
 
 
 <div class="d-article">
+<div class="layout-chunk" data-layout="l-body">
+
+</div>
+<div class="layout-chunk" data-layout="l-body">
+
+</div>
+<p>POVERTY STATUS IN THE PAST 12 MONTHS OF INDIVIDUALS BY SEX BY EDUCATIONAL ATTAINMENT Table b17003</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'>#Loading the required packages</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://walker-data.com/tidycensus/'>tidycensus</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://tidyverse.tidyverse.org'>tidyverse</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/eclarke/ggbeeswarm'>ggbeeswarm</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://wilkelab.org/ggridges/'>ggridges</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://sjmgarnier.github.io/viridis/'>viridis</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='http://github.com/hrbrmstr/hrbrthemes'>hrbrthemes</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://rstudio.github.io/leaflet/'>leaflet</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://r-spatial.github.io/sf/'>sf</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/mbedward/packcircles'>packcircles</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/walkerke/tigris'>tigris</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span><span class='op'>(</span>tigris_use_cache <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://davidgohel.github.io/ggiraph/'>ggiraph</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://shiny.rstudio.com/'>shiny</a></span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+
+</div>
+<div class="layout-chunk" data-layout="l-body">
+
+</div>
+<p>From the ACS 2019 5-year survey, we looked at the poverty status of Michigan residents based on whether they obtained high school diplomas or not. <br /> <br /></p>
+<p>Below you will find Geographical visualizations that provide information on the following variables: <br /> <br /> -Poor males with no high school diploma <br /> -Poor males with a high school diploma <br /> -Poor females with no high school diploma <br /> -Poor females with a high school diploma <br /> -Not poor males with no high school diploma <br /> -Not poor males with a high school diploma <br /> -Not poor females with no high school diploma <br /> -Not poor females with a high school diploma <br /></p>
+<div class="layout-chunk" data-layout="l-body">
+
+</div>
+<div class="layout-chunk" data-layout="l-body">
+
+</div>
+<div class="layout-chunk" data-layout="l-body">
+
+</div>
+<p>From the plot below, each point represents a county in Michigan. Both males and females with high school diplomas and are not poor have the highest percentages in all counties. Not poor males and females without high school diplomas were the least in all Michigan counties. <br /> <br /> The distribution of either of the genders per poverty and educational attainment category is almost similar. <br /> <br /></p>
+<div class="layout-chunk" data-layout="l-body">
+<p><img src="povertygen_files/figure-html5/plot-1.png" width="624" /></p>
+</div>
+<p>From the plot above each point represents a county in Michigan. Females and males with high school diplomas and are not poor have the highest percentages in all counties. The percentages of poor people with high school diplomas were the least in all counties. <br /> <br /></p>
+<p>From the plot below, we can see that the means of each of these variables is almost similar. <br /> <br /></p>
+<div class="layout-chunk" data-layout="l-body">
+<p><img src="povertygen_files/figure-html5/interesting%20variables-1.png" width="624" /></p>
+</div>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
