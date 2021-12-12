@@ -534,7 +534,6 @@ ggplot(noHS_percents, aes(x = `percent`, y = `variable` , fill = ..x..)) +
   geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
   scale_fill_viridis(name = "Inferno", option = "B") +
   labs(title = 'Percent of Population Below High School') +
-  theme_ipsum() +
     theme(
       legend.position="none",
       panel.spacing = unit(0.1, "lines"),
@@ -546,7 +545,6 @@ ggplot(HS_percents, aes(x = `percent`, y = `variable` , fill = ..x..)) +
   geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
   scale_fill_viridis(name = "Temp. [F]", option = "C") +
   labs(title = 'Percent of Population with High School Diploma') +
-  theme_ipsum() +
     theme(
       legend.position="none",
       panel.spacing = unit(0.1, "lines"),
@@ -558,7 +556,6 @@ ggplot(somecol_percents, aes(x = `percent`, y = `variable` , fill = ..x..)) +
   geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
   scale_fill_viridis(name = "Inferno", option = "A") +
   labs(title = 'Percent of Population with Some College') +
-  theme_ipsum() +
     theme(
       legend.position="none",
       panel.spacing = unit(0.1, "lines"),
@@ -570,7 +567,6 @@ ggplot(college_percents, aes(x = `percent`, y = `variable` , fill = ..x..)) +
   geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
   scale_fill_viridis(name = "Inferno", option = "D") +
   labs(title = 'Percent of Population with Bachelor or Higher') +
-  theme_ipsum() +
     theme(
       legend.position="none",
       panel.spacing = unit(0.1, "lines"),
