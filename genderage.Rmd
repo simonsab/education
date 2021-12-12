@@ -213,6 +213,10 @@ We decided to create box plots that would further allow us to investigate the no
 
 
 ```{r most interesting variables, message=FALSE}
+cool_age_vars <- MI_age_percent %>%
+  group_by(county) %>%
+  filter(row_number() %in% c(2,4,6,8,10,12,14,16,18,20))
+
 #box plot
 ggplot(cool_age_vars, aes(x = variables, y = percent)) +
   geom_boxplot(
