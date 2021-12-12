@@ -1,0 +1,7 @@
+---
+title: "Gender & Age by Education"
+description: |
+  Add in variable info here please
+output_dir: "_site"
+site: distill::distill_website
+---

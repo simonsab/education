@@ -1,0 +1,8 @@
+---
+title: "Code contributions to this project from Meghan Nash"
+description: |
+  Using Census Data to Analyze Educational Attainment
+output_dir: "_site"
+site: distill::distill_website
+search: TRUE
+---

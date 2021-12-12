@@ -87,26 +87,29 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 
   <!--radix_placeholder_meta_tags-->
-  <title>STA 418/518 Final Project by Abby Simons-Scalise, Meghan Nash &amp; Alex Gichuki: education</title>
+  <title>STA 418/518 Final Project by Abby Simons-Scalise, Meghan Nash &amp; Alex Gichuki: Using Census Data to Analyze Educational Attainment</title>
 
+  <meta property="description" itemprop="description" content="Data obtained from 5-year American Community Survey 2019"/>
 
 
 
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
-  <meta property="og:title" content="STA 418/518 Final Project by Abby Simons-Scalise, Meghan Nash &amp; Alex Gichuki: education"/>
+  <meta property="og:title" content="STA 418/518 Final Project by Abby Simons-Scalise, Meghan Nash &amp; Alex Gichuki: Using Census Data to Analyze Educational Attainment"/>
   <meta property="og:type" content="article"/>
+  <meta property="og:description" content="Data obtained from 5-year American Community Survey 2019"/>
   <meta property="og:locale" content="en_US"/>
   <meta property="og:site_name" content="STA 418/518 Final Project by Abby Simons-Scalise, Meghan Nash &amp; Alex Gichuki"/>
 
   <!--  https://dev.twitter.com/cards/types/summary -->
   <meta property="twitter:card" content="summary"/>
-  <meta property="twitter:title" content="STA 418/518 Final Project by Abby Simons-Scalise, Meghan Nash &amp; Alex Gichuki: education"/>
+  <meta property="twitter:title" content="STA 418/518 Final Project by Abby Simons-Scalise, Meghan Nash &amp; Alex Gichuki: Using Census Data to Analyze Educational Attainment"/>
+  <meta property="twitter:description" content="Data obtained from 5-year American Community Survey 2019"/>
 
   <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","site","listing"]}},"value":[{"type":"character","attributes":{},"value":["education"]},{"type":"character","attributes":{},"value":["distill::distill_website"]},{"type":"character","attributes":{},"value":["posts"]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","output_dir","site"]}},"value":[{"type":"character","attributes":{},"value":["Using Census Data to Analyze Educational Attainment"]},{"type":"character","attributes":{},"value":["Data obtained from 5-year American Community Survey 2019\n"]},{"type":"character","attributes":{},"value":["_site"]},{"type":"character","attributes":{},"value":["distill::distill_website"]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   <!--radix_placeholder_navigation_in_header-->
@@ -2049,12 +2052,12 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 </head>
 
-<body class="layout-listing">
+<body>
 
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"education","authors":[]}
+{"title":"Using Census Data to Analyze Educational Attainment","description":"Data obtained from 5-year American Community Survey 2019","authors":[]}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2102,176 +2105,22 @@ Code
 <!--/radix_placeholder_navigation_before_body-->
 <!--radix_placeholder_site_before_body-->
 <!--/radix_placeholder_site_before_body-->
-<!--radix_placeholder_article_listing-->
-
-
-<script type="application/javascript">
-
-function init_posts_list() {
-
-  function load_image(img) {
-    var src = $(img).attr('data-src');
-    if (src) {
-      $(img).attr('src', src);
-      $(img).on("load", function() {
-        img.removeAttribute('data-src');
-      });
-    }
-  }
-
-  function set_posts_visible(posts, visible) {
-    if (visible) {
-
-      // show bottom border by default
-      $(posts).removeClass('post-preview-last');
-
-      // apply limits if need be
-      var max_posts = 25;
-      var apply_limits = $('.posts-container').hasClass('posts-apply-limit');
-      if (apply_limits && posts.length > max_posts) {
-        posts = $(posts).slice(0, max_posts);
-      } else {
-        $('.posts-more a').addClass('hidden');
-      }
-
-      // apply last style
-      $(posts.slice(-1)[0]).addClass('post-preview-last');
-
-      $(posts).removeClass('hidden');
-      $(posts).find('img[data-src]').each(function(i, img) {
-        load_image(img);
-      });
-    } else {
-      $(posts).addClass('hidden');
-    }
-  }
-
-  function apply_hash_filter() {
-
-    // clear active state
-    $('.categories .active').removeClass('active');
-
-    // mark all posts invisible to start
-    set_posts_visible($('.posts-list').children('a'), false);
-
-    // if we have a hash filter
-    if (window.location.hash && window.location.hash.startsWith("#category:")) {
-
-      // mark posts that match the category visible
-      var page_category = window.location.hash.replace(/^#category:/, "");
-      page_category = decodeURIComponent(page_category)
-      var posts = $('.post-metadata').map(function(idx, script) {
-        var metadata = $.parseJSON($(script).html());
-        var post = null;
-        $.each(metadata.categories, function(idx, category) {
-          category = category.replace(/ /g,"_");
-          if ((page_category || '').toLowerCase() === "articles" || category === page_category) {
-            post = $(script).parent().get();
-            return false;
-          }
-        });
-        return post;
-      });
-      set_posts_visible(posts, true);
-
-      // mark the hash active
-      $('.categories li>a[href="' + decodeURIComponent(window.location.hash) + '"]').addClass('active');
-
-      // update the list_caption
-      var list_caption = $('.posts-list-caption');
-      var caption = (page_category || '').toLowerCase() === "articles"
-        ? list_caption.attr('data-caption')
-        : ('Category: ' + page_category.replace(/_/g," "));
-      list_caption.text(caption);
-
-    } else {
-
-      // no hash filter, make all posts visible (subject to max display)
-      set_posts_visible($('.posts-list').children(), true);
-
-      // reset list caption
-      var list_caption = $('.posts-list-caption');
-      list_caption.text(list_caption.attr('data-caption'));
-
-
-    }
-  }
-
-  // more articles
-  function apply_post_limits(apply) {
-    if (apply) {
-      $('.posts-container').addClass('posts-apply-limit');
-      $('.posts-more a').removeClass('hidden');
-    } else {
-      $('.posts-container').removeClass('posts-apply-limit');
-      $('.posts-more a').addClass('hidden');
-    }
-  }
-
-  // click handling for tags
-  $('.dt-tag').click(function(ev) {
-    window.location.hash = '#category:' + $(this).text().replace(/ /g, "_");
-    return false;
-  })
-
-  // hash filter handling
-  apply_hash_filter();
-  $(window).on('hashchange',function() {
-    apply_post_limits(true);
-    apply_hash_filter();
-  });
-
-  // more articles link
-  $('.posts-more a').click(function(e) {
-    e.preventDefault();
-    apply_post_limits(false);
-    apply_hash_filter();
-    return false;
-  });
-
-}
-
-</script>
-
-
-
-<div class="posts-container posts-apply-limit l-page">
-<div class="posts-list">
-<h1 class="posts-list-caption" data-caption="education">education</h1>
-<a href="posts/welcome/" class="post-preview">
-<script class="post-metadata" type="text/json">{"categories":[]}</script>
-<div class="metadata">
-<div class="publishedDate">Dec. 11, 2021</div>
-<div class="dt-authors">
-<div class="dt-author">Nora Jones</div>
-</div>
-</div>
-<div class="thumbnail">
-<img/>
-</div>
-<div class="description">
-<h2>Welcome to education</h2>
-<div class="dt-tags"></div>
-<p>Welcome to our new blog, education. We hope you enjoy 
-reading what we have to say!</p>
-</div>
-</a>
-</div>
-<div class="posts-more">
-<a href="#">More articles &raquo;</a>
-</div>
-</div>
-<!--/radix_placeholder_article_listing-->
 
 <div class="d-title">
-<h1>education</h1>
+<h1>Using Census Data to Analyze Educational Attainment</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
-
+<p><p>Data obtained from 5-year American Community Survey 2019</p></p>
 </div>
 
 
 <div class="d-article">
+<p><br /> <strong>Overview:</strong> <br /> The intention of this project is to investigate and analyze graduation rates for Michigan residents while also learning and expanding on our visualization skills in R. Each variable investigated is available within the navigation at the top right of the screen. Code used to create our analysis &amp; visualizations is also available. <br /></p>
+<p>Variables included in this project were: <br /> -Gender (binary) by age &amp; educational attainment <br /> -Education levels of adult correctional facility populations <br /> -Employment status by educational attainment <br /> -Poverty status by household type &amp; educational attainment <br /> -Poverty status by gender (binary) &amp; educational attainment <br /> -Median earnings by gender (binary) &amp; educational attainment <br /> -Educational attainment by language spoken at home <br /></p>
+<p>Due to time constraints, we omitted a regression analysis and instead focused on descriptive statistics and visualizations. We hope to have future opportunities to expand on this project to include deeper level investigation into the relationships between these variables and educational levels. <br /><br />
+<br /></p>
+<p><strong>Additional details:</strong> <br /> To obtain our datasets, we utilized the U.S. Census Bureau’s public database. We used an API call available through the <strong>tidycensus</strong> package to directly import American Community Survey data. We limited our scope to only the 2019 5-year ACS. The 5-year survey allows for more precise estimates of rural populations. <br /> <br /></p>
+<p><strong>Documentation:</strong> <br /> Below are all of the resources used to understand, troubleshoot, inspire, and build our code. <br /> <a href="https://www.r-graph-gallery.com/index.html">Various Charts from the R Graph Gallery</a><br /> <a href="https://walker-data.com/census-r/index.html">Online book:Analyzing US Census Data: Methods, Maps, and Models in R</a><br /> <a href="https://walker-data.com/tidycensus/index.html">Tidycensus Basic Usage</a> <br /> <a href="https://walker-data.com/isds-webinar/#1">Exploring US Census data in R with tidycensus</a><br /> <a href="https://dcl-wrangle.stanford.edu/census.html#census-bureau-basics">Data Wrangling: US Census Basics</a><br /> <a href="http://zevross.com/blog/2018/10/02/creating-beautiful-demographic-maps-in-r-with-the-tidycensus-and-tmap-packages/">Demographic Maps with Tidycensus</a><br /> <a href="https://ctompkins.netlify.app/post/map-census-data-with-r/">Map Census Data with R</a><br /> <a href="https://rstudio.github.io/leaflet/showhide.html">Leaflet Package for R</a><br /> <a href="https://www.census.gov/content/dam/Census/library/publications/2020/acs/acs_general_handbook_2020_ch01.pdf">Understanding ACS</a><br /> <a href="https://dusp.mit.edu/sites/dusp.mit.edu/files/attachments/publications/working_with_acs_R_v_1.2_0.pdf">Working with the ACS in R</a><br /> <a href="https://rstudio.github.io/distill/website.html#site-navigation">Distill for R Markdown</a><br /> <a href="https://www.youtube.com/watch?v=WZt4H-ogH3s">Building the Website</a></p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
