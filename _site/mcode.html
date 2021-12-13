@@ -2084,6 +2084,7 @@ Variables
 <a href="povertygen.html">Poverty Status by Gender</a>
 <a href="language.html">Lanaguage Spoken at Home</a>
 <a href="median.html">Median Earnings</a>
+<a href="votingAge.html">Voting Age</a>
 </div>
 </div>
 <div class="nav-dropdown">
@@ -2115,6 +2116,513 @@ Code
 
 
 <div class="d-article">
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://walker-data.com/tidycensus/'>tidycensus</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://tidyverse.tidyverse.org'>tidyverse</a></span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/options.html'>options</a></span><span class='op'>(</span>tigris_use_cache <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://wilkelab.org/ggridges/'>ggridges</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://dplyr.tidyverse.org'>dplyr</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://rstudio.github.io/leaflet/'>leaflet</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://r-spatial.github.io/sf/'>sf</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/mbedward/packcircles'>packcircles</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://ggplot2.tidyverse.org'>ggplot2</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://sjmgarnier.github.io/viridis/'>viridis</a></span><span class='op'>)</span>
+<span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://davidgohel.github.io/ggiraph/'>ggiraph</a></span><span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<table style="width:69%;">
+<colgroup>
+<col style="width: 69%" />
+</colgroup>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="co">## MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS)</span> <span class="co">## BY SEX BY EDUCATIONAL ATTAINMENT</span> <span class="co">## B20004</span> <span class="co"># total - no sex division</span> <span class="va">median_earn_total</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B20004_001”</span><span class="op">)</span> <span class="va">median_earn_less_hs</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B20004_002”</span><span class="op">)</span> <span class="va">median_earn_hs</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B20004_003”</span><span class="op">)</span> <span class="va">median_earn_college</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B20004_004”</span><span class="op">)</span> <span class="va">median_earn_bach_deg</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B20004_005”</span><span class="op">)</span> <span class="va">median_earn_grad_deg</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B20004_006”</span><span class="op">)</span> <span class="co"># male</span> <span class="va">median_earn_male</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B20004_007”</span><span class="op">)</span> <span class="va">median_earn_male_less_hs</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B20004_008”</span><span class="op">)</span> <span class="va">median_earn_male_hs</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B20004_009”</span><span class="op">)</span> <span class="va">median_earn_male_college</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B20004_010”</span><span class="op">)</span> <span class="va">median_earn_male_bach_deg</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B20004_011”</span><span class="op">)</span> <span class="va">median_earn_male_grad_deg</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B20004_012”</span><span class="op">)</span> <span class="co"># female</span> <span class="va">median_earn_fem</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B20004_013”</span><span class="op">)</span> <span class="va">median_earn_fem_less_hs</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B20004_014”</span><span class="op">)</span> <span class="va">median_earn_fem_hs</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B20004_015”</span><span class="op">)</span> <span class="va">median_earn_fem_college</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B20004_016”</span><span class="op">)</span> <span class="va">median_earn_fem_bach_deg</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B20004_017”</span><span class="op">)</span> <span class="va">median_earn_fem_grad_deg</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B20004_018”</span><span class="op">)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="co">## EDUCATIONAL ATTAINMENT AND EMPLOYMENT STATUS BY LANGUAGE SPOKEN AT HOME</span> <span class="co">## B16010</span> <span class="va">edu_emp_lang_total</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_001”</span><span class="op">)</span> <span class="co"># less than high school</span> <span class="va">edu_emp_lang_less_hs</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_002”</span><span class="op">)</span> <span class="va">edu_emp_lang_less_hs_work</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_003”</span><span class="op">)</span> <span class="va">edu_emp_lang_less_hs_work_eng</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_004”</span><span class="op">)</span> <span class="va">edu_emp_lang_less_hs_work_spanish</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_005”</span><span class="op">)</span> <span class="va">edu_emp_lang_less_hs_work_indoEurop</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_006”</span><span class="op">)</span> <span class="va">edu_emp_lang_less_hs_work_asian</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_007”</span><span class="op">)</span> <span class="va">edu_emp_lang_less_hs_work_other</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_008”</span><span class="op">)</span> <span class="va">edu_emp_lang_less_hs_NOTwork</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_009”</span><span class="op">)</span> <span class="va">edu_emp_lang_less_hs_NOTwork_eng</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_010”</span><span class="op">)</span> <span class="va">edu_emp_lang_less_hs_NOTwork_spanish</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_011”</span><span class="op">)</span> <span class="va">edu_emp_lang_less_hs_NOTwork_indoEurop</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_012”</span><span class="op">)</span> <span class="va">edu_emp_lang_less_hs_NOTwork_asian</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_013”</span><span class="op">)</span> <span class="va">edu_emp_lang_less_hs_NOTwork_other</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_014”</span><span class="op">)</span> <span class="co"># high school graduate</span> <span class="va">edu_emp_lang_hs</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_015”</span><span class="op">)</span> <span class="va">edu_emp_lang_hs_work</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_016”</span><span class="op">)</span> <span class="va">edu_emp_lang_hs_work_eng</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_017”</span><span class="op">)</span> <span class="va">edu_emp_lang_hs_work_spanish</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_018”</span><span class="op">)</span> <span class="va">edu_emp_lang_hs_work_indoEurop</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_019”</span><span class="op">)</span> <span class="va">edu_emp_lang_hs_work_asian</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_020”</span><span class="op">)</span> <span class="va">edu_emp_lang_hs_work_other</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_021”</span><span class="op">)</span> <span class="va">edu_emp_lang_hs_NOTwork</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_022”</span><span class="op">)</span> <span class="va">edu_emp_lang_hs_NOTwork_eng</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_023”</span><span class="op">)</span> <span class="va">edu_emp_lang_hs_NOTwork_spanish</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_024”</span><span class="op">)</span> <span class="va">edu_emp_lang_hs_NOTwork_indoEurop</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_025”</span><span class="op">)</span> <span class="va">edu_emp_lang_hs_NOTwork_asian</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_026”</span><span class="op">)</span> <span class="va">edu_emp_lang_hs_NOTwork_other</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_027”</span><span class="op">)</span> <span class="co"># some college</span> <span class="va">edu_emp_lang_college</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_028”</span><span class="op">)</span> <span class="va">edu_emp_lang_college_work</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_029”</span><span class="op">)</span> <span class="va">edu_emp_lang_college_work_eng</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_030”</span><span class="op">)</span> <span class="va">edu_emp_lang_college_work_spanish</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_031”</span><span class="op">)</span> <span class="va">edu_emp_lang_college_work_indoEurop</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_032”</span><span class="op">)</span> <span class="va">edu_emp_lang_college_work_asian</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_033”</span><span class="op">)</span> <span class="va">edu_emp_lang_college_work_other</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_034”</span><span class="op">)</span> <span class="va">edu_emp_lang_college_NOTwork</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_035”</span><span class="op">)</span> <span class="va">edu_emp_lang_college_NOTwork_eng</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_036”</span><span class="op">)</span> <span class="va">edu_emp_lang_college_NOTwork_spanish</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_037”</span><span class="op">)</span> <span class="va">edu_emp_lang_college_NOTwork_indoEurop</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_038”</span><span class="op">)</span> <span class="va">edu_emp_lang_college_NOTwork_asian</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_039”</span><span class="op">)</span> <span class="va">edu_emp_lang_college_NOTwork_other</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_040”</span><span class="op">)</span> <span class="co"># bachelors degree or higher</span> <span class="va">edu_emp_lang_bach_deg</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_041”</span><span class="op">)</span> <span class="va">edu_emp_lang_bach_deg_work</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_042”</span><span class="op">)</span> <span class="va">edu_emp_lang_bach_deg_work_eng</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_043”</span><span class="op">)</span> <span class="va">edu_emp_lang_bach_deg_work_spanish</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_044”</span><span class="op">)</span> <span class="va">edu_emp_lang_bach_deg_work_indoEurop</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_045”</span><span class="op">)</span> <span class="va">edu_emp_lang_bach_deg_work_asian</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_046”</span><span class="op">)</span> <span class="va">edu_emp_lang_bach_deg_work_other</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_047”</span><span class="op">)</span> <span class="va">edu_emp_lang_bach_deg_NOTwork</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_048”</span><span class="op">)</span> <span class="va">edu_emp_lang_bach_deg_NOTwork_eng</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_049”</span><span class="op">)</span> <span class="va">edu_emp_lang_bach_deg_NOTwork_spanish</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_050”</span><span class="op">)</span> <span class="va">edu_emp_lang_bach_deg_NOTwork_indoEurop</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_051”</span><span class="op">)</span> <span class="va">edu_emp_lang_bach_deg_NOTwork_asian</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_052”</span><span class="op">)</span> <span class="va">edu_emp_lang_bach_deg_NOTwork_other</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B16010_053”</span><span class="op">)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="co">## CITIZEN, VOTING-AGE POPULATION BY EDUCATIONAL ATTAINMENT</span> <span class="co">## B29002</span> <span class="va">voting_age_total</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B29002_001”</span><span class="op">)</span> <span class="co"># voting_age_below_9th &lt;- (“B29002_002”)</span> <span class="va">voting_age_hs</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B29002_003”</span><span class="op">)</span> <span class="va">voting_age_hs_grad</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B29002_004”</span><span class="op">)</span> <span class="va">voting_age_college</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B29002_005”</span><span class="op">)</span> <span class="va">voting_age_assoc</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B29002_006”</span><span class="op">)</span> <span class="va">voting_age_bach</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B29002_007”</span><span class="op">)</span> <span class="va">voting_age_grad</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="st">“B29002_008”</span><span class="op">)</span> </code></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'>################### Making the datasets ####################################</span>
+
+<span class='co'>## MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS)</span>
+<span class='co'>## BY SEX BY EDUCATIONAL ATTAINMENT</span>
+<span class='co'># total - no sex division</span>
+<span class='va'>med_earn_ds</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://walker-data.com/tidycensus/reference/get_acs.html'>get_acs</a></span><span class='op'>(</span>
+  geography <span class='op'>=</span> <span class='st'>"county"</span>,
+  state <span class='op'>=</span>  <span class='st'>"MI"</span>,
+  variables <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>median_earn_total</span>, <span class='va'>median_earn_less_hs</span>, <span class='va'>median_earn_hs</span>, 
+                <span class='va'>median_earn_college</span>, <span class='va'>median_earn_bach_deg</span>,
+                <span class='va'>median_earn_grad_deg</span><span class='op'>)</span>,
+  survey <span class='op'>=</span> <span class='st'>"acs5"</span>,
+  year <span class='op'>=</span> <span class='fl'>2019</span>,
+  output <span class='op'>=</span> <span class='st'>"wide"</span>,
+  geometry <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span>
+<span class='co'># male</span>
+<span class='va'>med_earn_male_ds</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://walker-data.com/tidycensus/reference/get_acs.html'>get_acs</a></span><span class='op'>(</span>
+  geography <span class='op'>=</span> <span class='st'>"county"</span>,
+  state <span class='op'>=</span>  <span class='st'>"MI"</span>,
+  variables <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>median_earn_male</span>, <span class='va'>median_earn_male_less_hs</span>, <span class='va'>median_earn_male_hs</span>, 
+                <span class='va'>median_earn_male_college</span>, <span class='va'>median_earn_male_bach_deg</span>, 
+                <span class='va'>median_earn_male_grad_deg</span><span class='op'>)</span>,
+  survey <span class='op'>=</span> <span class='st'>"acs5"</span>,
+  year <span class='op'>=</span> <span class='fl'>2019</span>,
+  output <span class='op'>=</span> <span class='st'>"wide"</span>,
+  geometry <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span>
+<span class='co'># female</span>
+<span class='va'>med_earn_fem_ds</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://walker-data.com/tidycensus/reference/get_acs.html'>get_acs</a></span><span class='op'>(</span>
+  geography <span class='op'>=</span> <span class='st'>"county"</span>,
+  state <span class='op'>=</span>  <span class='st'>"MI"</span>,
+  variables <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>median_earn_fem</span>, <span class='va'>median_earn_fem_less_hs</span>, <span class='va'>median_earn_fem_hs</span>, 
+                <span class='va'>median_earn_fem_college</span>, <span class='va'>median_earn_fem_bach_deg</span>, 
+                <span class='va'>median_earn_fem_grad_deg</span><span class='op'>)</span>,
+  survey <span class='op'>=</span> <span class='st'>"acs5"</span>,
+  year <span class='op'>=</span> <span class='fl'>2019</span>,
+  output <span class='op'>=</span> <span class='st'>"wide"</span>,
+  geometry <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span>
+
+
+<span class='co'>## EDUCATIONAL ATTAINMENT AND EMPLOYMENT STATUS BY LANGUAGE SPOKEN AT HOME</span>
+<span class='co'># total - no divisions</span>
+<span class='va'>edu_emp_lang_ds</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://walker-data.com/tidycensus/reference/get_acs.html'>get_acs</a></span><span class='op'>(</span>
+  geography <span class='op'>=</span> <span class='st'>"county"</span>,
+  state <span class='op'>=</span>  <span class='st'>"MI"</span>,
+  variables <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>edu_emp_lang_total</span><span class='op'>)</span>,
+  survey <span class='op'>=</span> <span class='st'>"acs5"</span>,
+  year <span class='op'>=</span> <span class='fl'>2019</span>,
+  output <span class='op'>=</span> <span class='st'>"wide"</span>,
+  geometry <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span>
+<span class='co'># less than high school</span>
+<span class='va'>edu_emp_lang_less_hs_ds</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://walker-data.com/tidycensus/reference/get_acs.html'>get_acs</a></span><span class='op'>(</span>
+  geography <span class='op'>=</span> <span class='st'>"county"</span>,
+  state <span class='op'>=</span>  <span class='st'>"MI"</span>,
+  variables <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>edu_emp_lang_less_hs</span>, <span class='va'>edu_emp_lang_less_hs_work</span>,
+                <span class='va'>edu_emp_lang_less_hs_work_eng</span>,
+                <span class='va'>edu_emp_lang_less_hs_work_spanish</span>,
+                <span class='va'>edu_emp_lang_less_hs_work_indoEurop</span>,
+                <span class='va'>edu_emp_lang_less_hs_work_asian</span>,
+                <span class='va'>edu_emp_lang_less_hs_work_other</span>,
+                <span class='va'>edu_emp_lang_less_hs_NOTwork</span>,
+                <span class='va'>edu_emp_lang_less_hs_NOTwork_eng</span>,
+                <span class='va'>edu_emp_lang_less_hs_NOTwork_spanish</span>,
+                <span class='va'>edu_emp_lang_less_hs_NOTwork_indoEurop</span>,
+                <span class='va'>edu_emp_lang_less_hs_NOTwork_asian</span>,
+                <span class='va'>edu_emp_lang_less_hs_NOTwork_other</span><span class='op'>)</span>,
+  survey <span class='op'>=</span> <span class='st'>"acs5"</span>,
+  year <span class='op'>=</span> <span class='fl'>2019</span>,
+  output <span class='op'>=</span> <span class='st'>"wide"</span>,
+  geometry <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span>
+<span class='co'># high school</span>
+<span class='va'>edu_emp_lang_hs_ds</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://walker-data.com/tidycensus/reference/get_acs.html'>get_acs</a></span><span class='op'>(</span>
+  geography <span class='op'>=</span> <span class='st'>"county"</span>,
+  state <span class='op'>=</span>  <span class='st'>"MI"</span>,
+  variables <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>edu_emp_lang_hs</span>, <span class='va'>edu_emp_lang_hs_work</span>, 
+                <span class='va'>edu_emp_lang_hs_work_eng</span>,
+                <span class='va'>edu_emp_lang_hs_work_spanish</span>,
+                <span class='va'>edu_emp_lang_hs_work_indoEurop</span>,
+                <span class='va'>edu_emp_lang_hs_work_asian</span>,
+                <span class='va'>edu_emp_lang_hs_work_other</span>,
+                <span class='va'>edu_emp_lang_hs_NOTwork</span>,
+                <span class='va'>edu_emp_lang_hs_NOTwork_eng</span>,
+                <span class='va'>edu_emp_lang_hs_NOTwork_spanish</span>,
+                <span class='va'>edu_emp_lang_hs_NOTwork_indoEurop</span>,
+                <span class='va'>edu_emp_lang_hs_NOTwork_asian</span>,
+                <span class='va'>edu_emp_lang_hs_NOTwork_other</span><span class='op'>)</span>,
+  survey <span class='op'>=</span> <span class='st'>"acs5"</span>,
+  year <span class='op'>=</span> <span class='fl'>2019</span>,
+  output <span class='op'>=</span> <span class='st'>"wide"</span>,
+  geometry <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span>
+<span class='co'># some college</span>
+<span class='va'>edu_emp_lang_college_ds</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://walker-data.com/tidycensus/reference/get_acs.html'>get_acs</a></span><span class='op'>(</span>
+  geography <span class='op'>=</span> <span class='st'>"county"</span>,
+  state <span class='op'>=</span>  <span class='st'>"MI"</span>,
+  variables <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>edu_emp_lang_college</span>, <span class='va'>edu_emp_lang_college_work</span>,
+                <span class='va'>edu_emp_lang_college_work_eng</span>,
+                <span class='va'>edu_emp_lang_college_work_spanish</span>,
+                <span class='va'>edu_emp_lang_college_work_indoEurop</span>,
+                <span class='va'>edu_emp_lang_college_work_asian</span>,
+                <span class='va'>edu_emp_lang_college_work_other</span>,
+                <span class='va'>edu_emp_lang_college_NOTwork</span>,
+                <span class='va'>edu_emp_lang_college_NOTwork_eng</span>,
+                <span class='va'>edu_emp_lang_college_NOTwork_spanish</span>,
+                <span class='va'>edu_emp_lang_college_NOTwork_indoEurop</span>,
+                <span class='va'>edu_emp_lang_college_NOTwork_asian</span>,
+                <span class='va'>edu_emp_lang_college_NOTwork_other</span><span class='op'>)</span>,
+  survey <span class='op'>=</span> <span class='st'>"acs5"</span>,
+  year <span class='op'>=</span> <span class='fl'>2019</span>,
+  output <span class='op'>=</span> <span class='st'>"wide"</span>,
+  geometry <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span>
+<span class='co'># bachelor's degree or higher</span>
+<span class='va'>edu_emp_lang_bach_deg_ds</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://walker-data.com/tidycensus/reference/get_acs.html'>get_acs</a></span><span class='op'>(</span>
+  geography <span class='op'>=</span> <span class='st'>"county"</span>,
+  state <span class='op'>=</span>  <span class='st'>"MI"</span>,
+  variables <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>edu_emp_lang_bach_deg</span>, <span class='va'>edu_emp_lang_bach_deg_work</span>,
+                <span class='va'>edu_emp_lang_bach_deg_work_eng</span>,
+                <span class='va'>edu_emp_lang_bach_deg_work_spanish</span>,
+                <span class='va'>edu_emp_lang_bach_deg_work_indoEurop</span>,
+                <span class='va'>edu_emp_lang_bach_deg_work_asian</span>,
+                <span class='va'>edu_emp_lang_bach_deg_work_other</span>,
+                <span class='va'>edu_emp_lang_bach_deg_NOTwork</span>,
+                <span class='va'>edu_emp_lang_bach_deg_NOTwork_eng</span>,
+                <span class='va'>edu_emp_lang_bach_deg_NOTwork_spanish</span>,
+                <span class='va'>edu_emp_lang_bach_deg_NOTwork_indoEurop</span>,
+                <span class='va'>edu_emp_lang_bach_deg_NOTwork_asian</span>,
+                <span class='va'>edu_emp_lang_bach_deg_NOTwork_other</span><span class='op'>)</span>,
+  survey <span class='op'>=</span> <span class='st'>"acs5"</span>,
+  year <span class='op'>=</span> <span class='fl'>2019</span>,
+  output <span class='op'>=</span> <span class='st'>"wide"</span>,
+  geometry <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span>
+
+
+<span class='co'>## CITIZEN, VOTING-AGE POPULATION BY EDUCATIONAL ATTAINMENT</span>
+<span class='va'>voting_age_ds</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://walker-data.com/tidycensus/reference/get_acs.html'>get_acs</a></span><span class='op'>(</span>
+  geography <span class='op'>=</span> <span class='st'>"state"</span>,
+  state <span class='op'>=</span>  <span class='st'>"MI"</span>,
+  <span class='co'># county = "Kent",</span>
+  variables <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>voting_age_hs</span>, <span class='va'>voting_age_hs_grad</span>, 
+                <span class='va'>voting_age_college</span>, <span class='va'>voting_age_assoc</span>, <span class='va'>voting_age_bach</span>,
+                <span class='va'>voting_age_grad</span><span class='op'>)</span>,
+  survey <span class='op'>=</span> <span class='st'>"acs5"</span>,
+  year <span class='op'>=</span> <span class='fl'>2019</span>,
+  <span class='co'># output = "wide",</span>
+  summary_var<span class='op'>=</span><span class='va'>voting_age_total</span>,
+  geometry <span class='op'>=</span> <span class='cn'>FALSE</span>
+<span class='op'>)</span>
+</code></pre>
+</div>
+</div>
+<table style="width:69%;">
+<colgroup>
+<col style="width: 69%" />
+</colgroup>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="co">## EDUCATIONAL ATTAINMENT AND EMPLOYMENT STATUS BY LANGUAGE SPOKEN AT HOME</span> <span class="co"># combining high school graduate, some college, and bachelors or higher</span> <span class="va">edu_emp_lang_grad</span> <span class="op">&lt;-</span> <span class="fu"><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class="op">(</span><span class="st">“B16010_015”</span>, <span class="st">“B16010_028”</span>, <span class="st">“B16010_041”</span><span class="op">)</span> <span class="va">edu_emp_lang_grad_work</span> <span class="op">&lt;-</span> <span class="fu"><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class="op">(</span><span class="st">“B16010_016”</span>, <span class="st">“B16010_029”</span>, <span class="st">“B16010_042”</span><span class="op">)</span> <span class="va">edu_emp_lang_grad_work_eng</span> <span class="op">&lt;-</span> <span class="fu"><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class="op">(</span><span class="st">“B16010_017”</span>, <span class="st">“B16010_030”</span>, <span class="st">“B16010_043”</span><span class="op">)</span> <span class="va">edu_emp_lang_grad_work_spanish</span> <span class="op">&lt;-</span> <span class="fu"><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class="op">(</span><span class="st">“B16010_018”</span>, <span class="st">“B16010_031”</span>, <span class="st">“B16010_044”</span><span class="op">)</span> <span class="va">edu_emp_lang_grad_work_indoEurop</span> <span class="op">&lt;-</span> <span class="fu"><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class="op">(</span><span class="st">“B16010_019”</span>, <span class="st">“B16010_032”</span>, <span class="st">“B16010_045”</span><span class="op">)</span> <span class="va">edu_emp_lang_grad_work_asian</span> <span class="op">&lt;-</span> <span class="fu"><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class="op">(</span><span class="st">“B16010_020”</span>, <span class="st">“B16010_033”</span>, <span class="st">“B16010_046”</span><span class="op">)</span> <span class="va">edu_emp_lang_grad_work_other</span> <span class="op">&lt;-</span> <span class="fu"><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class="op">(</span><span class="st">“B16010_021”</span>, <span class="st">“B16010_034”</span>, <span class="st">“B16010_047”</span><span class="op">)</span> <span class="va">edu_emp_lang_grad_NOTwork</span> <span class="op">&lt;-</span> <span class="fu"><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class="op">(</span><span class="st">“B16010_022”</span>, <span class="st">“B16010_035”</span>, <span class="st">“B16010_048”</span><span class="op">)</span> <span class="va">edu_emp_lang_grad_NOTwork_eng</span> <span class="op">&lt;-</span> <span class="fu"><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class="op">(</span><span class="st">“B16010_023”</span>, <span class="st">“B16010_036”</span>, <span class="st">“B16010_049”</span><span class="op">)</span> <span class="va">edu_emp_lang_grad_NOTwork_spanish</span> <span class="op">&lt;-</span> <span class="fu"><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class="op">(</span><span class="st">“B16010_024”</span>, <span class="st">“B16010_037”</span>, <span class="st">“B16010_050”</span><span class="op">)</span> <span class="va">edu_emp_lang_grad_NOTwork_indoEurop</span> <span class="op">&lt;-</span> <span class="fu"><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class="op">(</span><span class="st">“B16010_025”</span>, <span class="st">“B16010_038”</span>, <span class="st">“B16010_051”</span><span class="op">)</span> <span class="va">edu_emp_lang_grad_NOTwork_asian</span> <span class="op">&lt;-</span> <span class="fu"><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class="op">(</span><span class="st">“B16010_026”</span>, <span class="st">“B16010_039”</span>, <span class="st">“B16010_052”</span><span class="op">)</span> <span class="va">edu_emp_lang_grad_NOTwork_other</span> <span class="op">&lt;-</span> <span class="fu"><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class="op">(</span><span class="st">“B16010_027”</span>, <span class="st">“B16010_040”</span>, <span class="st">“B16010_053”</span><span class="op">)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="co">## MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS)</span> <span class="co">## BY SEX BY EDUCATIONAL ATTAINMENT</span> <span class="co"># combining earnings by total and edu level</span> <span class="va">total_earn</span> <span class="op">&lt;-</span> <span class="fu"><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class="op">(</span>total <span class="op">=</span> <span class="st">“B20004_001”</span>, male <span class="op">=</span> <span class="st">“B20004_007”</span>, female <span class="op">=</span> <span class="st">“B20004_013”</span><span class="op">)</span> <span class="va">less_hs_earn</span> <span class="op">&lt;-</span> <span class="fu"><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class="op">(</span>total <span class="op">=</span> <span class="st">“B20004_002”</span>, male <span class="op">=</span> <span class="st">“B20004_008”</span>, female <span class="op">=</span> <span class="st">“B20004_014”</span><span class="op">)</span> <span class="va">hs_earn</span> <span class="op">&lt;-</span> <span class="fu"><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class="op">(</span>total <span class="op">=</span> <span class="st">“B20004_003”</span>, male <span class="op">=</span> <span class="st">“B20004_009”</span>, female <span class="op">=</span> <span class="st">“B20004_015”</span><span class="op">)</span> <span class="va">college_earn</span> <span class="op">&lt;-</span> <span class="fu"><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class="op">(</span>total <span class="op">=</span> <span class="st">“B20004_004”</span>, male <span class="op">=</span> <span class="st">“B20004_010”</span>, female <span class="op">=</span> <span class="st">“B20004_016”</span><span class="op">)</span> <span class="va">bach_earn</span> <span class="op">&lt;-</span> <span class="fu"><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class="op">(</span>total <span class="op">=</span> <span class="st">“B20004_005”</span>, male <span class="op">=</span> <span class="st">“B20004_011”</span>, female <span class="op">=</span> <span class="st">“B20004_017”</span><span class="op">)</span> <span class="va">grad_earn</span> <span class="op">&lt;-</span> <span class="fu"><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class="op">(</span>total <span class="op">=</span> <span class="st">“B20004_006”</span>, male <span class="op">=</span> <span class="st">“B20004_012”</span>, female <span class="op">=</span> <span class="st">“B20004_018”</span><span class="op">)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="co">## EDUCATIONAL ATTAINMENT AND EMPLOYMENT STATUS BY LANGUAGE SPOKEN AT HOME</span> <span class="co"># combining languages for those with less than high school diploma</span> <span class="va">employed_lessHS</span> <span class="op">&lt;-</span> <span class="fu"><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class="op">(</span>lessHS_eng <span class="op">=</span> <span class="st">“B16010_004”</span>, lessHS_spanish <span class="op">=</span> <span class="st">“B16010_005”</span>, lessHS_indoEurop <span class="op">=</span> <span class="st">“B16010_006”</span>, lessHS_asian <span class="op">=</span> <span class="st">“B16010_007”</span>, lessHS_other <span class="op">=</span> <span class="st">“B16010_008”</span><span class="op">)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="va">UNemployed_lessHS</span> <span class="op">&lt;-</span> <span class="fu"><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class="op">(</span>lessHS_eng <span class="op">=</span> <span class="st">“B16010_010”</span>, lessHS_spanish <span class="op">=</span> <span class="st">“B16010_011”</span>, lessHS_indoEurop <span class="op">=</span> <span class="st">“B16010_012”</span>, lessHS_asian <span class="op">=</span> <span class="st">“B16010_013”</span>, lessHS_other <span class="op">=</span> <span class="st">“B16010_014”</span><span class="op">)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="co">## EDUCATIONAL ATTAINMENT AND EMPLOYMENT STATUS BY LANGUAGE SPOKEN AT HOME</span> <span class="co">## Making new dataset with combined variables</span> <span class="va">edu_emp_lang_comb_ds</span> <span class="op">&lt;-</span> <span class="fu"><a href='https://walker-data.com/tidycensus/reference/get_acs.html'>get_acs</a></span><span class="op">(</span> geography <span class="op">=</span> <span class="st">“county”</span>, state <span class="op">=</span> <span class="st">“MI”</span>, variables <span class="op">=</span> <span class="fu"><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class="op">(</span><span class="va">edu_emp_lang_grad</span>, <span class="va">edu_emp_lang_grad_work</span>, <span class="va">edu_emp_lang_grad_work_eng</span>, <span class="va">edu_emp_lang_grad_work_spanish</span>, <span class="va">edu_emp_lang_grad_work_indoEurop</span>, <span class="va">edu_emp_lang_grad_work_asian</span>, <span class="va">edu_emp_lang_grad_work_other</span>, <span class="va">edu_emp_lang_grad_NOTwork</span>, <span class="va">edu_emp_lang_grad_NOTwork_eng</span>, <span class="va">edu_emp_lang_grad_NOTwork_spanish</span>, <span class="va">edu_emp_lang_grad_NOTwork_indoEurop</span>, <span class="va">edu_emp_lang_grad_NOTwork_asian</span>, <span class="va">edu_emp_lang_grad_NOTwork_other</span><span class="op">)</span>, survey <span class="op">=</span> <span class="st">“acs5”</span>, year <span class="op">=</span> <span class="fl">2019</span>, output <span class="op">=</span> <span class="st">“wide”</span>, geometry <span class="op">=</span> <span class="cn">FALSE</span> <span class="op">)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="co">## EDUCATIONAL ATTAINMENT AND EMPLOYMENT STATUS BY LANGUAGE SPOKEN AT HOME</span> <span class="co"># making row-wise summaries for the combined dataset</span> <span class="va">edu_emp_lang_comb_summary</span> <span class="op">&lt;-</span> <span class="va">edu_emp_lang_comb_ds</span> <span class="op"><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> <span class="fu"><a href='https://dplyr.tidyverse.org/reference/rowwise.html'>rowwise</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> <span class="fu"><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class="op">(</span> edu_emp_lang_grad <span class="op">=</span> <span class="fu"><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class="op">(</span><span class="va">B16010_015E</span>, <span class="va">B16010_028E</span>, <span class="va">B16010_041E</span><span class="op">)</span>, edu_emp_lang_grad_work <span class="op">=</span> <span class="fu"><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class="op">(</span><span class="va">B16010_016E</span>, <span class="va">B16010_029E</span>, <span class="va">B16010_042E</span><span class="op">)</span>, edu_emp_lang_grad_work_eng <span class="op">=</span> <span class="fu"><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class="op">(</span><span class="va">B16010_017E</span>, <span class="va">B16010_030E</span>, <span class="va">B16010_043E</span><span class="op">)</span>, edu_emp_lang_grad_work_spanish <span class="op">=</span> <span class="fu"><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class="op">(</span><span class="va">B16010_018E</span>, <span class="va">B16010_031E</span>, <span class="va">B16010_044E</span><span class="op">)</span>, edu_emp_lang_grad_work_indoEurop <span class="op">=</span> <span class="fu"><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class="op">(</span><span class="va">B16010_019E</span>, <span class="va">B16010_031E</span>, <span class="va">B16010_045E</span><span class="op">)</span>, edu_emp_lang_grad_work_asian <span class="op">=</span> <span class="fu"><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class="op">(</span><span class="va">B16010_020E</span>, <span class="va">B16010_033E</span>, <span class="va">B16010_046E</span><span class="op">)</span>, edu_emp_lang_grad_work_other <span class="op">=</span> <span class="fu"><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class="op">(</span><span class="va">B16010_021E</span>, <span class="va">B16010_034E</span>, <span class="va">B16010_047E</span><span class="op">)</span>, edu_emp_lang_grad_NOTwork <span class="op">=</span> <span class="fu"><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class="op">(</span><span class="va">B16010_022E</span>, <span class="va">B16010_035E</span>, <span class="va">B16010_048E</span><span class="op">)</span>, edu_emp_lang_grad_NOTwork_eng <span class="op">=</span> <span class="fu"><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class="op">(</span><span class="va">B16010_023E</span>, <span class="va">B16010_036E</span>, <span class="va">B16010_049E</span><span class="op">)</span>, edu_emp_lang_grad_NOTwork_spanish <span class="op">=</span> <span class="fu"><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class="op">(</span><span class="va">B16010_024E</span>, <span class="va">B16010_037E</span>, <span class="va">B16010_050E</span><span class="op">)</span>, edu_emp_lang_grad_NOTwork_indoEurop <span class="op">=</span> <span class="fu"><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class="op">(</span><span class="va">B16010_025E</span>, <span class="va">B16010_038E</span>, <span class="va">B16010_051E</span><span class="op">)</span>, edu_emp_lang_grad_NOTwork_asian <span class="op">=</span> <span class="fu"><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class="op">(</span><span class="va">B16010_026E</span>, <span class="va">B16010_039E</span>, <span class="va">B16010_052E</span><span class="op">)</span>, edu_emp_lang_grad_NOTwork_other <span class="op">=</span> <span class="fu"><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class="op">(</span><span class="va">B16010_027E</span>, <span class="va">B16010_040E</span>, <span class="va">B16010_053E</span><span class="op">)</span> <span class="op">)</span> <span class="op"><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> <span class="fu"><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class="op">(</span><span class="va">NAME</span>, <span class="va">edu_emp_lang_grad</span>, <span class="va">edu_emp_lang_grad_work</span>, <span class="va">edu_emp_lang_grad_work_eng</span>, <span class="va">edu_emp_lang_grad_work_spanish</span>, <span class="va">edu_emp_lang_grad_work_indoEurop</span>, <span class="va">edu_emp_lang_grad_work_asian</span>, <span class="va">edu_emp_lang_grad_work_other</span>, <span class="va">edu_emp_lang_grad_NOTwork</span>, <span class="va">edu_emp_lang_grad_NOTwork_eng</span>, <span class="va">edu_emp_lang_grad_NOTwork_spanish</span>, <span class="va">edu_emp_lang_grad_NOTwork_indoEurop</span>, <span class="va">edu_emp_lang_grad_NOTwork_asian</span>, <span class="va">edu_emp_lang_grad_NOTwork_other</span><span class="op">)</span> <span class="op"><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> <span class="fu"><a href='https://dplyr.tidyverse.org/reference/arrange.html'>arrange</a></span><span class="op">(</span><span class="va">NAME</span><span class="op">)</span> <span class="op"><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> <span class="fu"><a href='https://dplyr.tidyverse.org/reference/group_by.html'>ungroup</a></span><span class="op">(</span><span class="op">)</span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="co">## EDUCATIONAL ATTAINMENT AND EMPLOYMENT STATUS BY LANGUAGE SPOKEN AT HOME</span> <span class="co"># combining languages for facet plots</span> <span class="va">employed_HS</span> <span class="op">&lt;-</span> <span class="fu"><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class="op">(</span>HS_eng <span class="op">=</span> <span class="va">edu_emp_lang_grad_work_eng</span>, HS_spanish <span class="op">=</span> <span class="va">edu_emp_lang_grad_work_spanish</span>, HS_indoEurop <span class="op">=</span> <span class="va">edu_emp_lang_grad_work_indoEurop</span>, HS_asian <span class="op">=</span> <span class="va">edu_emp_lang_grad_work_asian</span>, HS_other <span class="op">=</span> <span class="va">edu_emp_lang_grad_work_other</span><span class="op">)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="va">UNemployed_HS</span> <span class="op">&lt;-</span> <span class="fu"><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class="op">(</span>HS_eng <span class="op">=</span> <span class="va">edu_emp_lang_grad_NOTwork_eng</span>, HS_spanish <span class="op">=</span> <span class="va">edu_emp_lang_grad_NOTwork_spanish</span>, HS_indoEurop <span class="op">=</span> <span class="va">edu_emp_lang_grad_work_indoEurop</span>, HS_asian <span class="op">=</span> <span class="va">edu_emp_lang_grad_work_asian</span>, HS_other <span class="op">=</span> <span class="va">edu_emp_lang_grad_work_other</span><span class="op">)</span> </code></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'>################### Graphs #############################################</span>
+
+<span class='co'>## MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS)</span>
+<span class='co'>## BY SEX BY EDUCATIONAL ATTAINMENT</span>
+<span class='co'>## interactive leaflet plot</span>
+<span class='co'># Male High School Earn</span>
+<span class='va'>m_hs_county</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://walker-data.com/tidycensus/reference/get_acs.html'>get_acs</a></span><span class='op'>(</span>geography <span class='op'>=</span> <span class='st'>"county"</span>, 
+               variables <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span>median_earn_male_hs <span class='op'>=</span> <span class='st'>"B20004_009"</span><span class='op'>)</span>, 
+               state <span class='op'>=</span> <span class='st'>"MI"</span>, 
+               geometry <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_transform.html'>st_transform</a></span><span class='op'>(</span><span class='fl'>4326</span><span class='op'>)</span>
+
+<span class='va'>m_hs_tract</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://walker-data.com/tidycensus/reference/get_acs.html'>get_acs</a></span><span class='op'>(</span>geography <span class='op'>=</span> <span class='st'>"tract"</span>, 
+               variables <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span>median_earn_male_hs <span class='op'>=</span> <span class='st'>"B20004_009"</span><span class='op'>)</span>, 
+               state <span class='op'>=</span> <span class='st'>"MI"</span>, 
+               geometry <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_transform.html'>st_transform</a></span><span class='op'>(</span><span class='fl'>4326</span><span class='op'>)</span>
+
+<span class='va'>binsC</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>10000</span>, <span class='fl'>15000</span>, <span class='fl'>20000</span>, <span class='fl'>25000</span>, <span class='fl'>30000</span>, <span class='fl'>35000</span>, <span class='fl'>40000</span>, <span class='fl'>45000</span>, <span class='fl'>50000</span><span class='op'>)</span>
+<span class='va'>binsT</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>10000</span>, <span class='fl'>20000</span>, <span class='fl'>30000</span>, <span class='fl'>40000</span>, <span class='fl'>50000</span>, <span class='fl'>60000</span>, <span class='fl'>70000</span>, <span class='fl'>80000</span>, 
+          <span class='fl'>90000</span>, <span class='fl'>100000</span>, <span class='fl'>200000</span><span class='op'>)</span>
+
+<span class='va'>palaC</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/leaflet/man/colorNumeric.html'>colorBin</a></span><span class='op'>(</span><span class='st'>"viridis"</span>, <span class='va'>m_hs_county</span><span class='op'>$</span><span class='va'>estimate</span>, bins <span class='op'>=</span> <span class='va'>binsC</span><span class='op'>)</span>
+<span class='va'>palaT</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/leaflet/man/colorNumeric.html'>colorBin</a></span><span class='op'>(</span><span class='st'>"magma"</span>, <span class='va'>m_hs_county</span><span class='op'>$</span><span class='va'>estimate</span>, bins <span class='op'>=</span> <span class='va'>binsT</span><span class='op'>)</span>
+
+<span class='fu'><a href='https://rdrr.io/pkg/leaflet/man/leaflet.html'>leaflet</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://rdrr.io/pkg/leaflet/man/addProviderTiles.html'>addProviderTiles</a></span><span class='op'>(</span><span class='va'>providers</span><span class='op'>$</span><span class='va'>CartoDB.Positron</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://rdrr.io/pkg/leaflet/man/map-layers.html'>addPolygons</a></span><span class='op'>(</span>data <span class='op'>=</span> <span class='va'>m_hs_county</span>, stroke <span class='op'>=</span> <span class='cn'>FALSE</span>, smoothFactor <span class='op'>=</span> <span class='fl'>0.2</span>, 
+              color <span class='op'>=</span> <span class='op'>~</span><span class='fu'>palaC</span><span class='op'>(</span><span class='va'>estimate</span><span class='op'>)</span>, 
+              label <span class='op'>=</span> <span class='op'>~</span><span class='fu'><a href='https://rdrr.io/r/base/character.html'>as.character</a></span><span class='op'>(</span><span class='va'>estimate</span><span class='op'>)</span>, 
+              fillOpacity <span class='op'>=</span> <span class='fl'>0.8</span>, 
+              group <span class='op'>=</span> <span class='st'>"Counties"</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://rdrr.io/pkg/leaflet/man/map-layers.html'>addPolygons</a></span><span class='op'>(</span>data <span class='op'>=</span> <span class='va'>m_hs_tract</span>, stroke <span class='op'>=</span> <span class='cn'>FALSE</span>, smoothFactor <span class='op'>=</span> <span class='fl'>0.2</span>, 
+              color <span class='op'>=</span> <span class='op'>~</span><span class='fu'>palaT</span><span class='op'>(</span><span class='va'>estimate</span><span class='op'>)</span>, 
+              label <span class='op'>=</span> <span class='op'>~</span><span class='fu'><a href='https://rdrr.io/r/base/character.html'>as.character</a></span><span class='op'>(</span><span class='va'>estimate</span><span class='op'>)</span>, 
+              fillOpacity <span class='op'>=</span> <span class='fl'>0.8</span>, 
+              group <span class='op'>=</span> <span class='st'>"Tracts"</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://rdrr.io/pkg/leaflet/man/addLegend.html'>addLegend</a></span><span class='op'>(</span>pal <span class='op'>=</span> <span class='va'>palaC</span>, values <span class='op'>=</span> <span class='va'>m_hs_county</span><span class='op'>$</span><span class='va'>estimate</span>, 
+            title <span class='op'>=</span> <span class='st'>"Male Earnings with HS Diploma By County"</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://rdrr.io/pkg/leaflet/man/addLegend.html'>addLegend</a></span><span class='op'>(</span>pal <span class='op'>=</span> <span class='va'>palaT</span>, values <span class='op'>=</span> <span class='va'>m_hs_tract</span><span class='op'>$</span><span class='va'>estimate</span>, 
+            title <span class='op'>=</span> <span class='st'>"Male Earnings with HS Diploma By Census Tract"</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://rdrr.io/pkg/leaflet/man/addLayersControl.html'>addLayersControl</a></span><span class='op'>(</span>overlayGroups <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Tracts"</span>, <span class='st'>"Counties"</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://rdrr.io/pkg/leaflet/man/showGroup.html'>hideGroup</a></span><span class='op'>(</span><span class='st'>"Tracts"</span><span class='op'>)</span>
+
+<span class='co'># Female High School Earn</span>
+<span class='va'>f_hs_county</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://walker-data.com/tidycensus/reference/get_acs.html'>get_acs</a></span><span class='op'>(</span>geography <span class='op'>=</span> <span class='st'>"county"</span>, 
+                       variables <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span>median_earn_fem_hs <span class='op'>=</span> <span class='st'>"B20004_015"</span><span class='op'>)</span>, 
+                       state <span class='op'>=</span> <span class='st'>"MI"</span>, 
+                       geometry <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_transform.html'>st_transform</a></span><span class='op'>(</span><span class='fl'>4326</span><span class='op'>)</span>
+
+<span class='va'>f_hs_tract</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://walker-data.com/tidycensus/reference/get_acs.html'>get_acs</a></span><span class='op'>(</span>geography <span class='op'>=</span> <span class='st'>"tract"</span>, 
+                      variables <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span>median_earn_fem_hs <span class='op'>=</span> <span class='st'>"B20004_015"</span><span class='op'>)</span>, 
+                      state <span class='op'>=</span> <span class='st'>"MI"</span>, 
+                      geometry <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_transform.html'>st_transform</a></span><span class='op'>(</span><span class='fl'>4326</span><span class='op'>)</span>
+
+<span class='va'>binsC</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>15000</span>, <span class='fl'>20000</span>, <span class='fl'>25000</span>, <span class='fl'>30000</span><span class='op'>)</span>
+<span class='va'>binsT</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>10000</span>, <span class='fl'>15000</span>, <span class='fl'>20000</span>, <span class='fl'>25000</span>, <span class='fl'>30000</span>, <span class='fl'>35000</span>, <span class='fl'>40000</span>, <span class='fl'>45000</span>, <span class='fl'>50000</span><span class='op'>)</span>
+
+<span class='va'>palaC</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/leaflet/man/colorNumeric.html'>colorBin</a></span><span class='op'>(</span><span class='st'>"viridis"</span>, <span class='va'>f_hs_county</span><span class='op'>$</span><span class='va'>estimate</span>, bins <span class='op'>=</span> <span class='va'>binsC</span><span class='op'>)</span>
+<span class='va'>palaT</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/leaflet/man/colorNumeric.html'>colorBin</a></span><span class='op'>(</span><span class='st'>"magma"</span>, <span class='va'>f_hs_county</span><span class='op'>$</span><span class='va'>estimate</span>, bins <span class='op'>=</span> <span class='va'>binsT</span><span class='op'>)</span>
+
+<span class='fu'><a href='https://rdrr.io/pkg/leaflet/man/leaflet.html'>leaflet</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://rdrr.io/pkg/leaflet/man/addProviderTiles.html'>addProviderTiles</a></span><span class='op'>(</span><span class='va'>providers</span><span class='op'>$</span><span class='va'>CartoDB.Positron</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://rdrr.io/pkg/leaflet/man/map-layers.html'>addPolygons</a></span><span class='op'>(</span>data <span class='op'>=</span> <span class='va'>f_hs_county</span>, stroke <span class='op'>=</span> <span class='cn'>FALSE</span>, smoothFactor <span class='op'>=</span> <span class='fl'>0.2</span>, 
+              color <span class='op'>=</span> <span class='op'>~</span><span class='fu'>palaC</span><span class='op'>(</span><span class='va'>estimate</span><span class='op'>)</span>, 
+              label <span class='op'>=</span> <span class='op'>~</span><span class='fu'><a href='https://rdrr.io/r/base/character.html'>as.character</a></span><span class='op'>(</span><span class='va'>estimate</span><span class='op'>)</span>, 
+              fillOpacity <span class='op'>=</span> <span class='fl'>0.8</span>, 
+              group <span class='op'>=</span> <span class='st'>"Counties"</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://rdrr.io/pkg/leaflet/man/map-layers.html'>addPolygons</a></span><span class='op'>(</span>data <span class='op'>=</span> <span class='va'>f_hs_tract</span>, stroke <span class='op'>=</span> <span class='cn'>FALSE</span>, smoothFactor <span class='op'>=</span> <span class='fl'>0.2</span>, 
+              color <span class='op'>=</span> <span class='op'>~</span><span class='fu'>palaT</span><span class='op'>(</span><span class='va'>estimate</span><span class='op'>)</span>, 
+              label <span class='op'>=</span> <span class='op'>~</span><span class='fu'><a href='https://rdrr.io/r/base/character.html'>as.character</a></span><span class='op'>(</span><span class='va'>estimate</span><span class='op'>)</span>, 
+              fillOpacity <span class='op'>=</span> <span class='fl'>0.8</span>, 
+              group <span class='op'>=</span> <span class='st'>"Tracts"</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://rdrr.io/pkg/leaflet/man/addLegend.html'>addLegend</a></span><span class='op'>(</span>pal <span class='op'>=</span> <span class='va'>palaC</span>, values <span class='op'>=</span> <span class='va'>f_hs_county</span><span class='op'>$</span><span class='va'>estimate</span>, 
+            title <span class='op'>=</span> <span class='st'>"Female Earnings with HS Diploma By County"</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://rdrr.io/pkg/leaflet/man/addLegend.html'>addLegend</a></span><span class='op'>(</span>pal <span class='op'>=</span> <span class='va'>palaT</span>, values <span class='op'>=</span> <span class='va'>f_hs_tract</span><span class='op'>$</span><span class='va'>estimate</span>, 
+            title <span class='op'>=</span> <span class='st'>"Female Earnings with HS Diploma By Census Tract"</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://rdrr.io/pkg/leaflet/man/addLayersControl.html'>addLayersControl</a></span><span class='op'>(</span>overlayGroups <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Tracts"</span>, <span class='st'>"Counties"</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://rdrr.io/pkg/leaflet/man/showGroup.html'>hideGroup</a></span><span class='op'>(</span><span class='st'>"Tracts"</span><span class='op'>)</span>
+
+<span class='co'># Less than HS Earn</span>
+<span class='va'>m_less_county</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://walker-data.com/tidycensus/reference/get_acs.html'>get_acs</a></span><span class='op'>(</span>geography <span class='op'>=</span> <span class='st'>"county"</span>, 
+                       variables <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span>median_earn_male_less <span class='op'>=</span> <span class='st'>"B20004_008"</span><span class='op'>)</span>, 
+                       state <span class='op'>=</span> <span class='st'>"MI"</span>, 
+                       geometry <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_transform.html'>st_transform</a></span><span class='op'>(</span><span class='fl'>4326</span><span class='op'>)</span>
+
+<span class='va'>f_less_county</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://walker-data.com/tidycensus/reference/get_acs.html'>get_acs</a></span><span class='op'>(</span>geography <span class='op'>=</span> <span class='st'>"county"</span>, 
+                         variables <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span>median_earn_female_less <span class='op'>=</span> <span class='st'>"B20004_014"</span><span class='op'>)</span>, 
+                         state <span class='op'>=</span> <span class='st'>"MI"</span>, 
+                         geometry <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://r-spatial.github.io/sf/reference/st_transform.html'>st_transform</a></span><span class='op'>(</span><span class='fl'>4326</span><span class='op'>)</span>
+
+<span class='va'>bins</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>5000</span>, <span class='fl'>10000</span>, <span class='fl'>15000</span>, <span class='fl'>20000</span>, <span class='fl'>25000</span>, <span class='fl'>30000</span>, <span class='fl'>35000</span>, <span class='fl'>40000</span>, <span class='fl'>45000</span><span class='op'>)</span>
+
+<span class='va'>pala</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/pkg/leaflet/man/colorNumeric.html'>colorBin</a></span><span class='op'>(</span><span class='st'>"plasma"</span>, <span class='va'>m_less_county</span><span class='op'>$</span><span class='va'>estimate</span>, bins <span class='op'>=</span> <span class='va'>bins</span><span class='op'>)</span>
+
+<span class='fu'><a href='https://rdrr.io/pkg/leaflet/man/leaflet.html'>leaflet</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://rdrr.io/pkg/leaflet/man/addProviderTiles.html'>addProviderTiles</a></span><span class='op'>(</span><span class='va'>providers</span><span class='op'>$</span><span class='va'>CartoDB.Positron</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://rdrr.io/pkg/leaflet/man/map-layers.html'>addPolygons</a></span><span class='op'>(</span>data <span class='op'>=</span> <span class='va'>m_less_county</span>, stroke <span class='op'>=</span> <span class='cn'>FALSE</span>, smoothFactor <span class='op'>=</span> <span class='fl'>0.2</span>, 
+              color <span class='op'>=</span> <span class='op'>~</span><span class='fu'>pala</span><span class='op'>(</span><span class='va'>estimate</span><span class='op'>)</span>, 
+              label <span class='op'>=</span> <span class='op'>~</span><span class='fu'><a href='https://rdrr.io/r/base/character.html'>as.character</a></span><span class='op'>(</span><span class='va'>estimate</span><span class='op'>)</span>, 
+              fillOpacity <span class='op'>=</span> <span class='fl'>0.8</span>, 
+              group <span class='op'>=</span> <span class='st'>"Male Counties"</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://rdrr.io/pkg/leaflet/man/map-layers.html'>addPolygons</a></span><span class='op'>(</span>data <span class='op'>=</span> <span class='va'>f_less_county</span>, stroke <span class='op'>=</span> <span class='cn'>FALSE</span>, smoothFactor <span class='op'>=</span> <span class='fl'>0.2</span>, 
+              color <span class='op'>=</span> <span class='op'>~</span><span class='fu'>pala</span><span class='op'>(</span><span class='va'>estimate</span><span class='op'>)</span>, 
+              label <span class='op'>=</span> <span class='op'>~</span><span class='fu'><a href='https://rdrr.io/r/base/character.html'>as.character</a></span><span class='op'>(</span><span class='va'>estimate</span><span class='op'>)</span>, 
+              fillOpacity <span class='op'>=</span> <span class='fl'>0.8</span>, 
+              group <span class='op'>=</span> <span class='st'>"Female Counties"</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://rdrr.io/pkg/leaflet/man/addLegend.html'>addLegend</a></span><span class='op'>(</span>pal <span class='op'>=</span> <span class='va'>pala</span>, values <span class='op'>=</span> <span class='va'>m_less_county</span><span class='op'>$</span><span class='va'>estimate</span>, 
+            title <span class='op'>=</span> <span class='st'>"Earnings without HS Diploma By County"</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://rdrr.io/pkg/leaflet/man/addLayersControl.html'>addLayersControl</a></span><span class='op'>(</span>overlayGroups <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Female Counties"</span>, <span class='st'>"Male Counties"</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://rdrr.io/pkg/leaflet/man/showGroup.html'>hideGroup</a></span><span class='op'>(</span><span class='st'>"Female Counties"</span><span class='op'>)</span>
+
+
+<span class='co'>## EDUCATIONAL ATTAINMENT AND EMPLOYMENT STATUS BY LANGUAGE SPOKEN AT HOME</span>
+<span class='co'>## facet plots</span>
+<span class='co'># employed, less than HS</span>
+<span class='va'>kent_tracts</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://walker-data.com/tidycensus/reference/get_acs.html'>get_acs</a></span><span class='op'>(</span>geography <span class='op'>=</span> <span class='st'>"tract"</span>,
+                       variables <span class='op'>=</span> <span class='va'>employed_lessHS</span>, 
+                       state <span class='op'>=</span> <span class='st'>"MI"</span>,
+                       county <span class='op'>=</span> <span class='st'>"Kent County"</span>,
+                       geometry <span class='op'>=</span> <span class='cn'>TRUE</span>,
+                       summary_var <span class='op'>=</span> <span class='st'>"B20004_001"</span><span class='op'>)</span> 
+
+<span class='va'>kent_tracts</span> <span class='op'>&lt;-</span> <span class='va'>kent_tracts</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>pct <span class='op'>=</span> <span class='fl'>100</span> <span class='op'>*</span> <span class='va'>estimate</span> <span class='op'>/</span> <span class='va'>summary_est</span><span class='op'>)</span>
+
+<span class='va'>kent_tracts</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>fill <span class='op'>=</span> <span class='va'>pct</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggsf.html'>geom_sf</a></span><span class='op'>(</span>color <span class='op'>=</span> <span class='cn'>NA</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span><span class='op'>(</span>title <span class='op'>=</span> <span class='st'>'Percent Employed Without HS Diploma by Language Spoken at Home'</span>,
+       subtitle <span class='op'>=</span> <span class='st'>"2019 5-year ACS estimates for Kent County"</span>,
+       caption<span class='op'>=</span><span class='st'>'Source: ACS Data Table B29002 via the tidycensus R package'</span>,
+       x <span class='op'>=</span> <span class='cn'>NULL</span>,
+       y <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span><span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/theme.html'>theme</a></span><span class='op'>(</span>axis.text <span class='op'>=</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/element.html'>element_blank</a></span><span class='op'>(</span><span class='op'>)</span>,  <span class='co'># no lat/long values</span>
+        axis.ticks <span class='op'>=</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/element.html'>element_blank</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span> <span class='co'># no lat/long ticks</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/facet_wrap.html'>facet_wrap</a></span><span class='op'>(</span><span class='op'>~</span><span class='va'>variable</span>, ncol <span class='op'>=</span> <span class='fl'>3</span>, nrow <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_viridis.html'>scale_fill_viridis_c</a></span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'># unemployed, less than hs</span>
+<span class='va'>kent_tracts</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://walker-data.com/tidycensus/reference/get_acs.html'>get_acs</a></span><span class='op'>(</span>geography <span class='op'>=</span> <span class='st'>"tract"</span>,
+                       variables <span class='op'>=</span> <span class='va'>UNemployed_lessHS</span>, 
+                       state <span class='op'>=</span> <span class='st'>"MI"</span>,
+                       county <span class='op'>=</span> <span class='st'>"Kent County"</span>,
+                       geometry <span class='op'>=</span> <span class='cn'>TRUE</span>,
+                       summary_var <span class='op'>=</span> <span class='st'>"B20004_001"</span><span class='op'>)</span> 
+
+<span class='va'>kent_tracts</span> <span class='op'>&lt;-</span> <span class='va'>kent_tracts</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>pct <span class='op'>=</span> <span class='fl'>100</span> <span class='op'>*</span> <span class='va'>estimate</span> <span class='op'>/</span> <span class='va'>summary_est</span><span class='op'>)</span>
+
+<span class='va'>kent_tracts</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>fill <span class='op'>=</span> <span class='va'>pct</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggsf.html'>geom_sf</a></span><span class='op'>(</span>color <span class='op'>=</span> <span class='cn'>NA</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span><span class='op'>(</span>title <span class='op'>=</span> <span class='st'>'Percent Unemployed Without HS Diploma by Language Spoken at Home'</span>,
+       subtitle <span class='op'>=</span> <span class='st'>"2019 5-year ACS estimates for Kent County"</span>,
+       caption<span class='op'>=</span><span class='st'>'Source: ACS Data Table B29002 via the tidycensus R package'</span>,
+       x <span class='op'>=</span> <span class='cn'>NULL</span>,
+       y <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span><span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/theme.html'>theme</a></span><span class='op'>(</span>axis.text <span class='op'>=</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/element.html'>element_blank</a></span><span class='op'>(</span><span class='op'>)</span>,  <span class='co'># no lat/long values</span>
+        axis.ticks <span class='op'>=</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/element.html'>element_blank</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span> <span class='co'># no lat/long ticks</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/facet_wrap.html'>facet_wrap</a></span><span class='op'>(</span><span class='op'>~</span><span class='va'>variable</span>, ncol <span class='op'>=</span> <span class='fl'>3</span>, nrow <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_viridis.html'>scale_fill_viridis_c</a></span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'># employed, hs or higher</span>
+<span class='va'>kent_tracts_HS</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://walker-data.com/tidycensus/reference/get_acs.html'>get_acs</a></span><span class='op'>(</span>geography <span class='op'>=</span> <span class='st'>"tract"</span>,
+                       variables <span class='op'>=</span> <span class='va'>employed_HS</span>, 
+                       state <span class='op'>=</span> <span class='st'>"MI"</span>,
+                       county <span class='op'>=</span> <span class='st'>"Kent County"</span>,
+                       geometry <span class='op'>=</span> <span class='cn'>TRUE</span>,
+                       summary_var <span class='op'>=</span> <span class='st'>"B20004_001"</span><span class='op'>)</span> 
+
+<span class='va'>kent_tracts_HS</span> <span class='op'>&lt;-</span> <span class='va'>kent_tracts_HS</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>pct <span class='op'>=</span> <span class='fl'>100</span> <span class='op'>*</span> <span class='va'>estimate</span> <span class='op'>/</span> <span class='va'>summary_est</span><span class='op'>)</span>
+
+<span class='va'>kent_tracts_HS</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>fill <span class='op'>=</span> <span class='va'>pct</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggsf.html'>geom_sf</a></span><span class='op'>(</span>color <span class='op'>=</span> <span class='cn'>NA</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span><span class='op'>(</span>title <span class='op'>=</span> <span class='st'>'Percent Employed With HS Diploma by Language Spoken at Home'</span>,
+       subtitle <span class='op'>=</span> <span class='st'>"2019 5-year ACS estimates for Kent County"</span>,
+       caption<span class='op'>=</span><span class='st'>'Source: ACS Data Table B29002 via the tidycensus R package'</span>,
+       x <span class='op'>=</span> <span class='cn'>NULL</span>,
+       y <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span><span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/theme.html'>theme</a></span><span class='op'>(</span>axis.text <span class='op'>=</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/element.html'>element_blank</a></span><span class='op'>(</span><span class='op'>)</span>,  <span class='co'># no lat/long values</span>
+        axis.ticks <span class='op'>=</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/element.html'>element_blank</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span> <span class='co'># no lat/long ticks</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/facet_wrap.html'>facet_wrap</a></span><span class='op'>(</span><span class='op'>~</span><span class='va'>variable</span>, ncol <span class='op'>=</span> <span class='fl'>6</span>, nrow <span class='op'>=</span> <span class='fl'>3</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_viridis.html'>scale_fill_viridis_c</a></span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'># UNemployed, hs or higher</span>
+<span class='va'>kent_tracts_HS</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://walker-data.com/tidycensus/reference/get_acs.html'>get_acs</a></span><span class='op'>(</span>geography <span class='op'>=</span> <span class='st'>"tract"</span>,
+                       variables <span class='op'>=</span> <span class='va'>UNemployed_HS</span>, 
+                       state <span class='op'>=</span> <span class='st'>"MI"</span>,
+                       county <span class='op'>=</span> <span class='st'>"Kent County"</span>,
+                       geometry <span class='op'>=</span> <span class='cn'>TRUE</span>,
+                       summary_var <span class='op'>=</span> <span class='st'>"B20004_001"</span><span class='op'>)</span> 
+
+<span class='va'>kent_tracts_HS</span> <span class='op'>&lt;-</span> <span class='va'>kent_tracts_HS</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>pct <span class='op'>=</span> <span class='fl'>100</span> <span class='op'>*</span> <span class='va'>estimate</span> <span class='op'>/</span> <span class='va'>summary_est</span><span class='op'>)</span>
+
+<span class='va'>kent_tracts_HS</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>fill <span class='op'>=</span> <span class='va'>pct</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggsf.html'>geom_sf</a></span><span class='op'>(</span>color <span class='op'>=</span> <span class='cn'>NA</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span><span class='op'>(</span>title <span class='op'>=</span> <span class='st'>'Percent Unemployed With HS Diploma by Language Spoken at Home'</span>,
+       subtitle <span class='op'>=</span> <span class='st'>"2019 5-year ACS estimates for Kent County"</span>,
+       caption<span class='op'>=</span><span class='st'>'Source: ACS Data Table B29002 via the tidycensus R package'</span>,
+       x <span class='op'>=</span> <span class='cn'>NULL</span>,
+       y <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span><span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/theme.html'>theme</a></span><span class='op'>(</span>axis.text <span class='op'>=</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/element.html'>element_blank</a></span><span class='op'>(</span><span class='op'>)</span>,  <span class='co'># no lat/long values</span>
+        axis.ticks <span class='op'>=</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/element.html'>element_blank</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span> <span class='co'># no lat/long ticks</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/facet_wrap.html'>facet_wrap</a></span><span class='op'>(</span><span class='op'>~</span><span class='va'>variable</span>, ncol <span class='op'>=</span> <span class='fl'>6</span>, nrow <span class='op'>=</span> <span class='fl'>4</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_viridis.html'>scale_fill_viridis_c</a></span><span class='op'>(</span><span class='op'>)</span>
+</code></pre>
+</div>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span class='co'>## CITIZEN, VOTING-AGE POPULATION BY EDUCATIONAL ATTAINMENT</span>
+<span class='co'>## pie chart (with percents)</span>
+<span class='co'># getting percents</span>
+<span class='va'>voting_age_perc</span> <span class='op'>&lt;-</span> <span class='va'>voting_age_ds</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>percent <span class='op'>=</span> <span class='fl'>100</span> <span class='op'>*</span> <span class='op'>(</span><span class='va'>estimate</span> <span class='op'>/</span> <span class='va'>summary_est</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>NAME</span>, <span class='va'>variable</span>, <span class='va'>percent</span><span class='op'>)</span>
+
+<span class='va'>voting_age_label</span> <span class='op'>&lt;-</span> <span class='va'>voting_age_perc</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/arrange.html'>arrange</a></span><span class='op'>(</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/desc.html'>desc</a></span><span class='op'>(</span><span class='va'>variable</span><span class='op'>)</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>prop <span class='op'>=</span> <span class='va'>percent</span> <span class='op'>/</span> <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>voting_age_perc</span><span class='op'>$</span><span class='va'>percent</span><span class='op'>)</span> <span class='op'>*</span><span class='fl'>100</span><span class='op'>)</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>ypos <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/cumsum.html'>cumsum</a></span><span class='op'>(</span><span class='va'>percent</span><span class='op'>)</span><span class='op'>-</span> <span class='fl'>0.5</span><span class='op'>*</span><span class='va'>percent</span><span class='op'>)</span>
+<span class='co'>################################################ ERROR position of the labels</span>
+<span class='co'># actual pie chart</span>
+<span class='co'>#ggplot(voting_age_perc, aes(x="", y=variable, fill=percent)) +</span>
+<span class='co'>#  geom_bar(stat="identity", width=1, color="white") +</span>
+<span class='co'>#  coord_polar("y", start=0) +</span>
+<span class='co'>#  theme_void() + # remove background, grid, numeric labels</span>
+<span class='co'>#  theme(legend.position="none") + # remove legend</span>
+<span class='co'>#  geom_text(aes(label = percent), color = "white", size=6) # add labels</span>
+
+<span class='co'>#ggplot(voting_age_perc, aes(x="", y=variable, fill=percent)) +</span>
+<span class='co'>#  geom_col(color = "black") +</span>
+<span class='co'>#  geom_label(aes(label = percent), color = c(1, "white", "white"),</span>
+<span class='co'>#             position = position_stack(vjust = 0.5),</span>
+<span class='co'>#             show.legend = FALSE) +</span>
+<span class='co'>#  guides(fill = guide_legend(title = "Percents")) +</span>
+<span class='co'>#  scale_fill_viridis_d() +</span>
+<span class='co'>#  coord_polar(theta = "y") + </span>
+<span class='co'>#  theme_void()</span>
+
+<span class='co'>## Backup if pie chart doesn't look good</span>
+<span class='co'># classic bar chart</span>
+<span class='va'>voting_age_perc</span> <span class='op'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span> <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x<span class='op'>=</span><span class='va'>variable</span>, y<span class='op'>=</span><span class='va'>percent</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_bar.html'>geom_bar</a></span><span class='op'>(</span>stat<span class='op'>=</span><span class='st'>"identity"</span>, fill<span class='op'>=</span><span class='st'>"#f68060"</span>, alpha<span class='op'>=</span><span class='fl'>.6</span>, width<span class='op'>=</span><span class='fl'>.4</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/coord_flip.html'>coord_flip</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>xlab</a></span><span class='op'>(</span><span class='st'>""</span><span class='op'>)</span> <span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggtheme.html'>theme_bw</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_discrete.html'>scale_x_discrete</a></span><span class='op'>(</span>labels <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'High School, No Diploma'</span>,<span class='st'>'High School Graduate'</span>, 
+                              <span class='st'>'Some College, No Degree'</span>, <span class='st'>'Associates Degree'</span>, 
+                              <span class='st'>'Bachelors Degree'</span>, <span class='st'>'Graduate Degree or Higher'</span><span class='op'>)</span><span class='op'>)</span><span class='op'>+</span>
+  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span><span class='op'>(</span>title <span class='op'>=</span> <span class='st'>"Percent of MI Voting-Age Population by Educational Attainment"</span>, 
+       subtitle <span class='op'>=</span> <span class='st'>"2019 5-year ACS estimates"</span>, 
+       y <span class='op'>=</span> <span class='st'>"Percent"</span>, 
+       x <span class='op'>=</span> <span class='st'>"Education Level"</span>, 
+       caption <span class='op'>=</span> <span class='st'>"Source: ACS Data Table B29002 via the tidycensus R package"</span><span class='op'>)</span> 
+</code></pre>
+</div>
+</div>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
