@@ -23,6 +23,8 @@ navbar:
             href: language.html
           - text: "Median Earnings"
             href: median.html
+          - text: "Voting Age"
+            href: votingAge.html
     - text: "Code"
       menu:
           - text: "Abby's Code"
