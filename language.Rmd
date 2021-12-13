@@ -1,0 +1,382 @@
+---
+title: "Language and Employment"
+description: |
+  EDUCATIONAL ATTAINMENT AND EMPLOYMENT STATUS BY LANGUAGE SPOKEN AT HOME <br /> Table: B16010 - Variables used: 01-53
+output_dir: "_site"
+site: distill::distill_website
+#runtime: shiny
+search: TRUE
+---
+
+```{r define_variables,echo=FALSE}
+edu_emp_lang_total <- ("B16010_001")
+# less than high school
+edu_emp_lang_less_hs <- ("B16010_002")
+edu_emp_lang_less_hs_work <- ("B16010_003")
+edu_emp_lang_less_hs_work_eng <- ("B16010_004")
+edu_emp_lang_less_hs_work_spanish <- ("B16010_005")
+edu_emp_lang_less_hs_work_indoEurop <- ("B16010_006")
+edu_emp_lang_less_hs_work_asian <- ("B16010_007")
+edu_emp_lang_less_hs_work_other <- ("B16010_008")
+edu_emp_lang_less_hs_NOTwork <- ("B16010_009")
+edu_emp_lang_less_hs_NOTwork_eng <- ("B16010_010")
+edu_emp_lang_less_hs_NOTwork_spanish <- ("B16010_011")
+edu_emp_lang_less_hs_NOTwork_indoEurop <- ("B16010_012")
+edu_emp_lang_less_hs_NOTwork_asian <- ("B16010_013")
+edu_emp_lang_less_hs_NOTwork_other <- ("B16010_014")
+# high school graduate
+edu_emp_lang_hs <- ("B16010_015")
+edu_emp_lang_hs_work <- ("B16010_016")
+edu_emp_lang_hs_work_eng <- ("B16010_017")
+edu_emp_lang_hs_work_spanish <- ("B16010_018")
+edu_emp_lang_hs_work_indoEurop <- ("B16010_019")
+edu_emp_lang_hs_work_asian <- ("B16010_020")
+edu_emp_lang_hs_work_other <- ("B16010_021")
+edu_emp_lang_hs_NOTwork <- ("B16010_022")
+edu_emp_lang_hs_NOTwork_eng <- ("B16010_023")
+edu_emp_lang_hs_NOTwork_spanish <- ("B16010_024")
+edu_emp_lang_hs_NOTwork_indoEurop <- ("B16010_025")
+edu_emp_lang_hs_NOTwork_asian <- ("B16010_026")
+edu_emp_lang_hs_NOTwork_other <- ("B16010_027")
+# some college
+edu_emp_lang_college <- ("B16010_028")
+edu_emp_lang_college_work <- ("B16010_029")
+edu_emp_lang_college_work_eng <- ("B16010_030")
+edu_emp_lang_college_work_spanish <- ("B16010_031")
+edu_emp_lang_college_work_indoEurop <- ("B16010_032")
+edu_emp_lang_college_work_asian <- ("B16010_033")
+edu_emp_lang_college_work_other <- ("B16010_034")
+edu_emp_lang_college_NOTwork <- ("B16010_035")
+edu_emp_lang_college_NOTwork_eng <- ("B16010_036")
+edu_emp_lang_college_NOTwork_spanish <- ("B16010_037")
+edu_emp_lang_college_NOTwork_indoEurop <- ("B16010_038")
+edu_emp_lang_college_NOTwork_asian <- ("B16010_039")
+edu_emp_lang_college_NOTwork_other <- ("B16010_040")
+# bachelors degree or higher
+edu_emp_lang_bach_deg <- ("B16010_041")
+edu_emp_lang_bach_deg_work <- ("B16010_042")
+edu_emp_lang_bach_deg_work_eng <- ("B16010_043")
+edu_emp_lang_bach_deg_work_spanish <- ("B16010_044")
+edu_emp_lang_bach_deg_work_indoEurop <- ("B16010_045")
+edu_emp_lang_bach_deg_work_asian <- ("B16010_046")
+edu_emp_lang_bach_deg_work_other <- ("B16010_047")
+edu_emp_lang_bach_deg_NOTwork <- ("B16010_048")
+edu_emp_lang_bach_deg_NOTwork_eng <- ("B16010_049")
+edu_emp_lang_bach_deg_NOTwork_spanish <- ("B16010_050")
+edu_emp_lang_bach_deg_NOTwork_indoEurop <- ("B16010_051")
+edu_emp_lang_bach_deg_NOTwork_asian <- ("B16010_052")
+edu_emp_lang_bach_deg_NOTwork_other <- ("B16010_053")
+```
+
+```{r make_dataset,echo=FALSE}
+edu_emp_lang_ds <- get_acs(
+  geography = "county",
+  state =  "MI",
+  variables = c(edu_emp_lang_total),
+  survey = "acs5",
+  year = 2019,
+  output = "wide",
+  geometry = FALSE
+)
+# less than high school
+edu_emp_lang_less_hs_ds <- get_acs(
+  geography = "county",
+  state =  "MI",
+  variables = c(edu_emp_lang_less_hs, edu_emp_lang_less_hs_work,
+                edu_emp_lang_less_hs_work_eng,
+                edu_emp_lang_less_hs_work_spanish,
+                edu_emp_lang_less_hs_work_indoEurop,
+                edu_emp_lang_less_hs_work_asian,
+                edu_emp_lang_less_hs_work_other,
+                edu_emp_lang_less_hs_NOTwork,
+                edu_emp_lang_less_hs_NOTwork_eng,
+                edu_emp_lang_less_hs_NOTwork_spanish,
+                edu_emp_lang_less_hs_NOTwork_indoEurop,
+                edu_emp_lang_less_hs_NOTwork_asian,
+                edu_emp_lang_less_hs_NOTwork_other),
+  survey = "acs5",
+  year = 2019,
+  output = "wide",
+  geometry = FALSE
+)
+# high school
+edu_emp_lang_hs_ds <- get_acs(
+  geography = "county",
+  state =  "MI",
+  variables = c(edu_emp_lang_hs, edu_emp_lang_hs_work, 
+                edu_emp_lang_hs_work_eng,
+                edu_emp_lang_hs_work_spanish,
+                edu_emp_lang_hs_work_indoEurop,
+                edu_emp_lang_hs_work_asian,
+                edu_emp_lang_hs_work_other,
+                edu_emp_lang_hs_NOTwork,
+                edu_emp_lang_hs_NOTwork_eng,
+                edu_emp_lang_hs_NOTwork_spanish,
+                edu_emp_lang_hs_NOTwork_indoEurop,
+                edu_emp_lang_hs_NOTwork_asian,
+                edu_emp_lang_hs_NOTwork_other),
+  survey = "acs5",
+  year = 2019,
+  output = "wide",
+  geometry = FALSE
+)
+# some college
+edu_emp_lang_college_ds <- get_acs(
+  geography = "county",
+  state =  "MI",
+  variables = c(edu_emp_lang_college, edu_emp_lang_college_work,
+                edu_emp_lang_college_work_eng,
+                edu_emp_lang_college_work_spanish,
+                edu_emp_lang_college_work_indoEurop,
+                edu_emp_lang_college_work_asian,
+                edu_emp_lang_college_work_other,
+                edu_emp_lang_college_NOTwork,
+                edu_emp_lang_college_NOTwork_eng,
+                edu_emp_lang_college_NOTwork_spanish,
+                edu_emp_lang_college_NOTwork_indoEurop,
+                edu_emp_lang_college_NOTwork_asian,
+                edu_emp_lang_college_NOTwork_other),
+  survey = "acs5",
+  year = 2019,
+  output = "wide",
+  geometry = FALSE
+)
+# bachelor's degree or higher
+edu_emp_lang_bach_deg_ds <- get_acs(
+  geography = "county",
+  state =  "MI",
+  variables = c(edu_emp_lang_bach_deg, edu_emp_lang_bach_deg_work,
+                edu_emp_lang_bach_deg_work_eng,
+                edu_emp_lang_bach_deg_work_spanish,
+                edu_emp_lang_bach_deg_work_indoEurop,
+                edu_emp_lang_bach_deg_work_asian,
+                edu_emp_lang_bach_deg_work_other,
+                edu_emp_lang_bach_deg_NOTwork,
+                edu_emp_lang_bach_deg_NOTwork_eng,
+                edu_emp_lang_bach_deg_NOTwork_spanish,
+                edu_emp_lang_bach_deg_NOTwork_indoEurop,
+                edu_emp_lang_bach_deg_NOTwork_asian,
+                edu_emp_lang_bach_deg_NOTwork_other),
+  survey = "acs5",
+  year = 2019,
+  output = "wide",
+  geometry = FALSE
+)
+```
+
+
+```{r combining_variables,echo=FALSE}
+# combining high school graduate, some college, and bachelors or higher
+edu_emp_lang_grad <- c("B16010_015", "B16010_028", "B16010_041")
+edu_emp_lang_grad_work <- c("B16010_016", "B16010_029", "B16010_042")
+edu_emp_lang_grad_work_eng <- c("B16010_017", "B16010_030", "B16010_043")
+edu_emp_lang_grad_work_spanish <- c("B16010_018", "B16010_031", "B16010_044")
+edu_emp_lang_grad_work_indoEurop <- c("B16010_019", "B16010_032", "B16010_045")
+edu_emp_lang_grad_work_asian <- c("B16010_020", "B16010_033", "B16010_046")
+edu_emp_lang_grad_work_other <- c("B16010_021", "B16010_034", "B16010_047")
+edu_emp_lang_grad_NOTwork <- c("B16010_022", "B16010_035", "B16010_048")
+edu_emp_lang_grad_NOTwork_eng <- c("B16010_023", "B16010_036", "B16010_049")
+edu_emp_lang_grad_NOTwork_spanish <- c("B16010_024", "B16010_037", "B16010_050")
+edu_emp_lang_grad_NOTwork_indoEurop <- c("B16010_025", "B16010_038", "B16010_051")
+edu_emp_lang_grad_NOTwork_asian <- c("B16010_026", "B16010_039", "B16010_052")
+edu_emp_lang_grad_NOTwork_other <- c("B16010_027", "B16010_040", "B16010_053")
+
+# combining languages for those with less than high school diploma
+employed_lessHS <- c(lessHS_eng = "B16010_004", 
+                     lessHS_spanish = "B16010_005", 
+                     lessHS_indoEurop = "B16010_006", 
+                     lessHS_asian = "B16010_007",
+                     lessHS_other = "B16010_008")
+
+UNemployed_lessHS <- c(lessHS_eng = "B16010_010", 
+                       lessHS_spanish = "B16010_011", 
+                       lessHS_indoEurop = "B16010_012", 
+                       lessHS_asian = "B16010_013",
+                       lessHS_other = "B16010_014")
+
+## Making new dataset with combined variables
+edu_emp_lang_comb_ds <- get_acs(
+  geography = "county",
+  state =  "MI",
+  variables = c(edu_emp_lang_grad, edu_emp_lang_grad_work,
+                edu_emp_lang_grad_work_eng, 
+                edu_emp_lang_grad_work_spanish, 
+                edu_emp_lang_grad_work_indoEurop, 
+                edu_emp_lang_grad_work_asian, 
+                edu_emp_lang_grad_work_other, 
+                edu_emp_lang_grad_NOTwork, 
+                edu_emp_lang_grad_NOTwork_eng, 
+                edu_emp_lang_grad_NOTwork_spanish, 
+                edu_emp_lang_grad_NOTwork_indoEurop, 
+                edu_emp_lang_grad_NOTwork_asian, 
+                edu_emp_lang_grad_NOTwork_other),
+  survey = "acs5",
+  year = 2019,
+  output = "wide",
+  geometry = FALSE
+)
+
+# making row-wise summaries for the combined dataset
+edu_emp_lang_comb_summary <- edu_emp_lang_comb_ds %>%
+  rowwise() %>%
+  mutate(
+    edu_emp_lang_grad = sum(B16010_015E, B16010_028E, B16010_041E), 
+    edu_emp_lang_grad_work = sum(B16010_016E, B16010_029E, B16010_042E),
+    edu_emp_lang_grad_work_eng = sum(B16010_017E, B16010_030E, B16010_043E),
+    edu_emp_lang_grad_work_spanish = sum(B16010_018E, B16010_031E, B16010_044E),
+    edu_emp_lang_grad_work_indoEurop = sum(B16010_019E, B16010_031E, B16010_045E),
+    edu_emp_lang_grad_work_asian = sum(B16010_020E, B16010_033E, B16010_046E),
+    edu_emp_lang_grad_work_other = sum(B16010_021E, B16010_034E, B16010_047E),
+    edu_emp_lang_grad_NOTwork = sum(B16010_022E, B16010_035E, B16010_048E),
+    edu_emp_lang_grad_NOTwork_eng = sum(B16010_023E, B16010_036E, B16010_049E),
+    edu_emp_lang_grad_NOTwork_spanish = sum(B16010_024E, B16010_037E, B16010_050E),
+    edu_emp_lang_grad_NOTwork_indoEurop = sum(B16010_025E, B16010_038E, B16010_051E),
+    edu_emp_lang_grad_NOTwork_asian = sum(B16010_026E, B16010_039E, B16010_052E),
+    edu_emp_lang_grad_NOTwork_other = sum(B16010_027E, B16010_040E, B16010_053E)
+  ) %>%
+  select(NAME, edu_emp_lang_grad, edu_emp_lang_grad_work, edu_emp_lang_grad_work_eng, 
+         edu_emp_lang_grad_work_spanish, edu_emp_lang_grad_work_indoEurop, 
+         edu_emp_lang_grad_work_asian, edu_emp_lang_grad_work_other, 
+         edu_emp_lang_grad_NOTwork, edu_emp_lang_grad_NOTwork_eng, 
+         edu_emp_lang_grad_NOTwork_spanish, edu_emp_lang_grad_NOTwork_indoEurop, 
+         edu_emp_lang_grad_NOTwork_asian, edu_emp_lang_grad_NOTwork_other) %>%
+  arrange(NAME) %>%
+  ungroup()
+
+# combining languages for facet plots
+employed_HS <- c(HS_eng = edu_emp_lang_grad_work_eng, 
+                 HS_spanish = edu_emp_lang_grad_work_spanish, 
+                 HS_indoEurop = edu_emp_lang_grad_work_indoEurop, 
+                 HS_asian = edu_emp_lang_grad_work_asian,
+                 HS_other = edu_emp_lang_grad_work_other)
+
+UNemployed_HS <- c(HS_eng = edu_emp_lang_grad_NOTwork_eng, 
+                   HS_spanish = edu_emp_lang_grad_NOTwork_spanish, 
+                   HS_indoEurop = edu_emp_lang_grad_work_indoEurop, 
+                   HS_asian = edu_emp_lang_grad_work_asian,
+                   HS_other = edu_emp_lang_grad_work_other)
+```
+
+From the ACS 2019 5-year survey, we compared if people are native English speakers (do they speak a different language at home) and if they are employed by their education level for Kent County. <br /> 
+ <br />
+ 
+The facet plots below use variables of:<br /> <br /> 
+-Percent employed without a high school diploma <br /> 
+-Percent unemployed without a high school diploma <br /> 
+-Percent employed with a high school diploma <br /> 
+-Percent unemployed with a high school diploma <br />
+with all of these being broken down by the language spoken at home (as categorized by the US Census):<br /> 
+-An Asian language <br />
+-Engish <br />
+-An Indo-European language<br />
+-Spanish <br />
+-Other <br /><br />
+
+Observations from the facet plots: <br /> 
+In general, these plots helped us to see what languages are spoken in Grand Rapids and the rest of Kent County. Our biggest populations spoke English and Spanish, likely as one would expect for our area. <br />
+These first two plots are just for people without a high school diploma. We can see that most of the people who do not have a high school diploma and are employed tend to speak Spanish at home. Additionally, most of the people without a diploma but are unemployed tend to speak English or Spanish. <br />
+
+```{r making_graphs,echo=FALSE}
+## facet plots
+# employed, less than HS
+kent_tracts <- get_acs(geography = "tract",
+                       variables = employed_lessHS, 
+                       state = "MI",
+                       county = "Kent County",
+                       geometry = TRUE,
+                       summary_var = "B20004_001") 
+
+kent_tracts <- kent_tracts %>% 
+  mutate(pct = 100 * estimate / summary_est)
+
+kent_tracts %>% 
+  ggplot(aes(fill = pct)) +
+  geom_sf(color = NA) +
+  labs(title = 'Percent Employed Without HS Diploma by Language Spoken at Home',
+       subtitle = "2019 5-year ACS estimates for Kent County",
+       caption='Source: ACS Data Table B29002 via the tidycensus R package',
+       x = NULL,
+       y = NULL)+
+  theme(axis.text = element_blank(),  # no lat/long values
+        axis.ticks = element_blank()) + # no lat/long ticks
+  facet_wrap(~variable, ncol = 3, nrow = 2) +
+  scale_fill_viridis_c()
+
+# unemployed, less than hs
+kent_tracts <- get_acs(geography = "tract",
+                       variables = UNemployed_lessHS, 
+                       state = "MI",
+                       county = "Kent County",
+                       geometry = TRUE,
+                       summary_var = "B20004_001") 
+
+kent_tracts <- kent_tracts %>% 
+  mutate(pct = 100 * estimate / summary_est)
+
+kent_tracts %>% 
+  ggplot(aes(fill = pct)) +
+  geom_sf(color = NA) +
+  labs(title = 'Percent Unemployed Without HS Diploma by Language Spoken at Home',
+       subtitle = "2019 5-year ACS estimates for Kent County",
+       caption='Source: ACS Data Table B29002 via the tidycensus R package',
+       x = NULL,
+       y = NULL)+
+  theme(axis.text = element_blank(),  # no lat/long values
+        axis.ticks = element_blank()) + # no lat/long ticks
+  facet_wrap(~variable, ncol = 3, nrow = 2) +
+  scale_fill_viridis_c()
+```
+
+More observations from the facet plots: <br /> 
+This next set of plots represent people with at least a high school diploma. It is broken up into sections of (1) people with a high school diploma, (2) people with some college, and (3) people with a bachelor's degree or higher.  <br />
+Here it is clear that most of the people who have a high school diploma or higher education in Kent County tend to speak English, no matter their employment status. <br />
+
+```{r graphs_with_HS,echo=FALSE}
+# employed, hs or higher
+kent_tracts_HS <- get_acs(geography = "tract",
+                       variables = employed_HS, 
+                       state = "MI",
+                       county = "Kent County",
+                       geometry = TRUE,
+                       summary_var = "B20004_001") 
+
+kent_tracts_HS <- kent_tracts_HS %>% 
+  mutate(pct = 100 * estimate / summary_est)
+
+kent_tracts_HS %>% 
+  ggplot(aes(fill = pct)) +
+  geom_sf(color = NA) +
+  labs(title = 'Percent Employed With HS Diploma by Language Spoken at Home',
+       subtitle = "2019 5-year ACS estimates for Kent County",
+       caption='Source: ACS Data Table B29002 via the tidycensus R package',
+       x = NULL,
+       y = NULL)+
+  theme(axis.text = element_blank(),  # no lat/long values
+        axis.ticks = element_blank()) + # no lat/long ticks
+  facet_wrap(~variable, ncol = 6, nrow = 3) +
+  scale_fill_viridis_c()
+
+# UNemployed, hs or higher
+kent_tracts_HS <- get_acs(geography = "tract",
+                       variables = UNemployed_HS, 
+                       state = "MI",
+                       county = "Kent County",
+                       geometry = TRUE,
+                       summary_var = "B20004_001") 
+
+kent_tracts_HS <- kent_tracts_HS %>% 
+  mutate(pct = 100 * estimate / summary_est)
+
+kent_tracts_HS %>% 
+  ggplot(aes(fill = pct)) +
+  geom_sf(color = NA) +
+  labs(title = 'Percent Unemployed With HS Diploma by Language Spoken at Home',
+       subtitle = "2019 5-year ACS estimates for Kent County",
+       caption='Source: ACS Data Table B29002 via the tidycensus R package',
+       x = NULL,
+       y = NULL)+
+  theme(axis.text = element_blank(),  # no lat/long values
+        axis.ticks = element_blank()) + # no lat/long ticks
+  facet_wrap(~variable, ncol = 6, nrow = 4) +
+  scale_fill_viridis_c()
+```
