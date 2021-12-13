@@ -6,3 +6,23 @@ output_dir: "_site"
 site: distill::distill_website
 search: TRUE
 ---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      results = "hide",
+                      fig.show="hide",
+                      message = FALSE)
+```
+
+```{r, libraries, echo = TRUE, results = 'hide'}
+library(tidycensus)
+library(tidyverse)
+options(tigris_use_cache = TRUE)
+library(ggridges)
+library(dplyr)
+library(leaflet)
+library(sf)
+library(packcircles)
+library(ggplot2)
+library(viridis)
+library(ggiraph)
+```

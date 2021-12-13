@@ -1,30 +1,59 @@
 ---
-title: "votingAge"
-author: "Meghan Nash"
-date: "12/13/2021"
-output: html_document
+title: "Voting Age"
+description: |
+  CITIZEN, VOTING-AGE POPULATION BY EDUCATIONAL ATTAINMENT <br /> Table: B29002 - Variables used: 01-08 (not 02)
+output_dir: "_site"
+site: distill::distill_website
+#runtime: shiny
+search: TRUE
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r define_variables,echo=FALSE}
+voting_age_total <- ("B29002_001")
+# voting_age_below_9th <- ("B29002_002")
+voting_age_hs <- ("B29002_003")
+voting_age_hs_grad <- ("B29002_004")
+voting_age_college <- ("B29002_005")
+voting_age_assoc <- ("B29002_006")
+voting_age_bach <- ("B29002_007")
+voting_age_grad <- ("B29002_008")
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r make_dataset,echo=FALSE}
+voting_age_ds <- get_acs(
+  geography = "state",
+  state =  "MI",
+  # county = "Kent",
+  variables = c(voting_age_hs, voting_age_hs_grad, 
+                voting_age_college, voting_age_assoc, voting_age_bach,
+                voting_age_grad),
+  survey = "acs5",
+  year = 2019,
+  # output = "wide",
+  summary_var=voting_age_total,
+  geometry = FALSE
+)
 ```
 
-## Including Plots
+From the ACS 2019 5-year survey, we analyzed a count of those older than 18 and what their education level is to see the graduation rates for the entire population of Michigan. <br /> 
+ <br />
 
-You can also embed plots, for example:
+Observations from the bar chart: <br /> 
+This bar chart shows that less than 10% of the voting age population does not at least have a high school diploma. Furthermore, the largest percentages of the population that can vote have either a high school diploma or some college education. <br />
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r making_barchart,echo=FALSE}
+voting_age_perc %>%
+  ggplot(aes(x=variable, y=percent)) +
+  geom_bar(stat="identity", fill="#f68060", alpha=.6, width=.4) +
+  coord_flip() +
+  xlab("") +
+  theme_bw()+
+  scale_x_discrete(labels = c('High School, No Diploma','High School Graduate', 
+                              'Some College, No Degree', 'Associates Degree', 
+                              'Bachelors Degree', 'Graduate Degree or Higher'))+
+  labs(title = "Percent of MI Voting-Age Population by Educational Attainment", 
+       subtitle = "2019 5-year ACS estimates", 
+       y = "Percent", 
+       x = "Education Level", 
+       caption = "Source: ACS Data Table B29002 via the tidycensus R package") 
 ```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
