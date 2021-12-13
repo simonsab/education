@@ -1,30 +1,239 @@
 ---
-title: "medianEarnings"
-author: "Meghan Nash"
-date: "12/13/2021"
-output: html_document
+title: "Median Earnings"
+description: |
+  MEDIAN EARNINGS IN THE PAST 12 MONTHS (IN 2019 INFLATION-ADJUSTED DOLLARS) BY SEX BY EDUCATIONAL ATTAINMENT <br /> Table: B20004 - Variables used: 01-18
+output_dir: "_site"
+site: distill::distill_website
+#runtime: shiny
+search: TRUE
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r define_variables,echo=FALSE}
+
+# total - no sex division
+median_earn_total <- ("B20004_001")
+median_earn_less_hs <- ("B20004_002")
+median_earn_hs <- ("B20004_003")
+median_earn_college <- ("B20004_004")
+median_earn_bach_deg <- ("B20004_005")
+median_earn_grad_deg <- ("B20004_006")
+# male
+median_earn_male <- ("B20004_007")
+median_earn_male_less_hs <- ("B20004_008")
+median_earn_male_hs <- ("B20004_009")
+median_earn_male_college <- ("B20004_010")
+median_earn_male_bach_deg <- ("B20004_011")
+median_earn_male_grad_deg <- ("B20004_012")
+# female
+median_earn_fem <- ("B20004_013")
+median_earn_fem_less_hs <- ("B20004_014")
+median_earn_fem_hs <- ("B20004_015")
+median_earn_fem_college <- ("B20004_016")
+median_earn_fem_bach_deg <- ("B20004_017")
+median_earn_fem_grad_deg <- ("B20004_018")
+
 ```
 
-## R Markdown
+```{r make_dataset,echo=FALSE}
+# total - no sex division
+med_earn_ds <- get_acs(
+  geography = "county",
+  state =  "MI",
+  variables = c(median_earn_total, median_earn_less_hs, median_earn_hs, 
+                median_earn_college, median_earn_bach_deg,
+                median_earn_grad_deg),
+  survey = "acs5",
+  year = 2019,
+  output = "wide",
+  geometry = FALSE
+)
+# male
+med_earn_male_ds <- get_acs(
+  geography = "county",
+  state =  "MI",
+  variables = c(median_earn_male, median_earn_male_less_hs, median_earn_male_hs, 
+                median_earn_male_college, median_earn_male_bach_deg, 
+                median_earn_male_grad_deg),
+  survey = "acs5",
+  year = 2019,
+  output = "wide",
+  geometry = FALSE
+)
+# female
+med_earn_fem_ds <- get_acs(
+  geography = "county",
+  state =  "MI",
+  variables = c(median_earn_fem, median_earn_fem_less_hs, median_earn_fem_hs, 
+                median_earn_fem_college, median_earn_fem_bach_deg, 
+                median_earn_fem_grad_deg),
+  survey = "acs5",
+  year = 2019,
+  output = "wide",
+  geometry = FALSE
+)
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
 ```
 
-## Including Plots
+```{r combining_variables,echo=FALSE}
+total_earn <- c(total = "B20004_001",
+                male = "B20004_007",
+                female = "B20004_013")
+less_hs_earn <- c(total = "B20004_002",
+                male = "B20004_008",
+                female = "B20004_014")
+hs_earn <- c(total = "B20004_003",
+                  male = "B20004_009",
+                  female = "B20004_015")
+college_earn <- c(total = "B20004_004",
+             male = "B20004_010",
+             female = "B20004_016")
+bach_earn <- c(total = "B20004_005",
+                  male = "B20004_011",
+                  female = "B20004_017")
+grad_earn <- c(total = "B20004_006",
+                  male = "B20004_012",
+                  female = "B20004_018")
 
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+From the ACS 2019 5-year survey, we compared education levels by median income and sex across the state of Michigan. Specifically, we looked to see if there was a difference in median income levels whether or not the individual had a high school diploma and if there was any pattern comparing males to females. We analyzed this across counties and across census tracts. <br /> 
+ <br />
+ 
+The interactive leaflet plots below use variables of:<br /> <br /> 
+-Median earnings of men with a high school diploma <br /> 
+-Median earnings of women with a high school diploma <br /> 
+-Median earnings of men without a high school diploma <br /> 
+-Median earnings of women witout a high school diploma <br /><br /> 
+
+Observations from these maps: <br /> 
+In general, these leaflet plots show that having a high school diploma tends to lead to a higher median income and that there is a wage gap between sexes. <br /> 
+In these first two plots where we are looking at those with high school diplomas, men have a larger range in their income amount than women in both the county level and the tract level. <br /> 
+Furthermore, men have a much higher max earning of about 45,000-50,000 compared to women at 30,000 in the county level. In the tract level it is even more noticeable at up to 100,000 for men versus up to 50,000 for women. <br />
+
+
+```{r making_graphs,echo=FALSE}
+## interactive leaflet plot
+# Male High School Earn
+m_hs_county <- get_acs(geography = "county", 
+               variables = c(median_earn_male_hs = "B20004_009"), 
+               state = "MI", 
+               geometry = TRUE) %>%
+  st_transform(4326)
+
+m_hs_tract <- get_acs(geography = "tract", 
+               variables = c(median_earn_male_hs = "B20004_009"), 
+               state = "MI", 
+               geometry = TRUE) %>%
+  st_transform(4326)
+
+binsC <- c(10000, 15000, 20000, 25000, 30000, 35000, 40000, 45000, 50000)
+binsT <- c(0, 10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 
+          90000, 100000, 200000)
+
+palaC <- colorBin("viridis", m_hs_county$estimate, bins = binsC)
+palaT <- colorBin("magma", m_hs_county$estimate, bins = binsT)
+
+leaflet() %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addPolygons(data = m_hs_county, stroke = FALSE, smoothFactor = 0.2, 
+              color = ~palaC(estimate), 
+              label = ~as.character(estimate), 
+              fillOpacity = 0.8, 
+              group = "Counties") %>%
+  addPolygons(data = m_hs_tract, stroke = FALSE, smoothFactor = 0.2, 
+              color = ~palaT(estimate), 
+              label = ~as.character(estimate), 
+              fillOpacity = 0.8, 
+              group = "Tracts") %>%
+  addLegend(pal = palaC, values = m_hs_county$estimate, 
+            title = "Male Earnings with HS Diploma By County") %>%
+  addLegend(pal = palaT, values = m_hs_tract$estimate, 
+            title = "Male Earnings with HS Diploma By Census Tract") %>%
+  addLayersControl(overlayGroups = c("Tracts", "Counties")) %>%
+  hideGroup("Tracts")
+
+# Female High School Earn
+f_hs_county <- get_acs(geography = "county", 
+                       variables = c(median_earn_fem_hs = "B20004_015"), 
+                       state = "MI", 
+                       geometry = TRUE) %>%
+  st_transform(4326)
+
+f_hs_tract <- get_acs(geography = "tract", 
+                      variables = c(median_earn_fem_hs = "B20004_015"), 
+                      state = "MI", 
+                      geometry = TRUE) %>%
+  st_transform(4326)
+
+binsC <- c(15000, 20000, 25000, 30000)
+binsT <- c(10000, 15000, 20000, 25000, 30000, 35000, 40000, 45000, 50000)
+
+palaC <- colorBin("viridis", f_hs_county$estimate, bins = binsC)
+palaT <- colorBin("magma", f_hs_county$estimate, bins = binsT)
+
+leaflet() %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addPolygons(data = f_hs_county, stroke = FALSE, smoothFactor = 0.2, 
+              color = ~palaC(estimate), 
+              label = ~as.character(estimate), 
+              fillOpacity = 0.8, 
+              group = "Counties") %>%
+  addPolygons(data = f_hs_tract, stroke = FALSE, smoothFactor = 0.2, 
+              color = ~palaT(estimate), 
+              label = ~as.character(estimate), 
+              fillOpacity = 0.8, 
+              group = "Tracts") %>%
+  addLegend(pal = palaC, values = f_hs_county$estimate, 
+            title = "Female Earnings with HS Diploma By County") %>%
+  addLegend(pal = palaT, values = f_hs_tract$estimate, 
+            title = "Female Earnings with HS Diploma By Census Tract") %>%
+  addLayersControl(overlayGroups = c("Tracts", "Counties")) %>%
+  hideGroup("Tracts")
+
+```
+
+Further observations: <br /> 
+This next plot is for those without a high school diploma and is only by county. <br /> 
+Here we can see that women continue to earn less than men without a high school diploma, as seen that men tend to be warmer colors (higher income) versus counties for women tend to be cooler colors (lower income). <br /> 
+Also, as noted before, the median income levels for Michiganders without a high school diploma are lower than the median earnings for those that did graduate high school. <br /> 
+
+```{r noHS_graphs,echo=FALSE}
+# Less than HS Earn
+m_less_county <- get_acs(geography = "county", 
+                       variables = c(median_earn_male_less = "B20004_008"), 
+                       state = "MI", 
+                       geometry = TRUE) %>%
+  st_transform(4326)
+
+f_less_county <- get_acs(geography = "county", 
+                         variables = c(median_earn_female_less = "B20004_014"), 
+                         state = "MI", 
+                         geometry = TRUE) %>%
+  st_transform(4326)
+
+bins <- c(0, 5000, 10000, 15000, 20000, 25000, 30000, 35000, 40000, 45000)
+
+pala <- colorBin("plasma", m_less_county$estimate, bins = bins)
+
+leaflet() %>%
+  addProviderTiles(providers$CartoDB.Positron) %>%
+  addPolygons(data = m_less_county, stroke = FALSE, smoothFactor = 0.2, 
+              color = ~pala(estimate), 
+              label = ~as.character(estimate), 
+              fillOpacity = 0.8, 
+              group = "Male Counties") %>%
+  addPolygons(data = f_less_county, stroke = FALSE, smoothFactor = 0.2, 
+              color = ~pala(estimate), 
+              label = ~as.character(estimate), 
+              fillOpacity = 0.8, 
+              group = "Female Counties") %>%
+  addLegend(pal = pala, values = m_less_county$estimate, 
+            title = "Earnings without HS Diploma By County") %>%
+  addLayersControl(overlayGroups = c("Female Counties", "Male Counties")) %>%
+  hideGroup("Female Counties")
+
+```
+
+
+
